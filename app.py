@@ -19,10 +19,6 @@ def dbQuery(query):
     rows = cur.fetchall()
     return rows
 
-def abort_if_todo_doesnt_exist(todo_id):
-    if todo_id not in TODOS:
-        abort(404, message="Todo {} doesn't exist".format(todo_id))
-
 parser = reqparse.RequestParser()
 parser.add_argument('task')
 
@@ -37,12 +33,8 @@ class Sector(Resource):
         threshold = 0
         count = 0
         response = []
-        print(type(items))
    
-        for val in items:
-            print(threshold)
-
-            
+        for val in items:            
             if count < 1:
                 threshold = val['timestamp']
                 response.append({
@@ -54,12 +46,9 @@ class Sector(Resource):
                 })
             if int(val['timestamp']) >= threshold:
                 coordinates.append({'latitude': val['latitude'], 'longitude': val['longtitude']})
-
             else :
                 break
-            count = count + 1            
-        #response = jsonify(response)
-        
+            count = count + 1
         response[0]['data']['coordinates'] = coordinates
         return response
 
