@@ -10,9 +10,11 @@ api = Api(app)
 
 conn = sqlite3.connect(DATABASE)
 cur = conn.cursor()
-cur.execute('SELECT * FROM entry')
-rows = cur.fetchall()
-print(rows)
+
+def dbQuery(query):
+    cur.execute(query)
+    rows = cur.fetchall()
+    return rows
 
 
 TODOS = {
