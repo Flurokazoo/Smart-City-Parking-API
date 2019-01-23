@@ -3,7 +3,7 @@ from flask import g
 from flask_restful import reqparse, abort, Api, Resource
 import sqlite3
 
-DATABASE = 'C:/sqlite/parking_db.db'
+DATABASE = 'C:/Users/Jasper/Downloads/parking_db.db'
 
 app = Flask(__name__)
 api = Api(app)
@@ -14,7 +14,6 @@ def dbQuery(query):
     cur = conn.cursor()
     cur.execute(query)
     rows = cur.fetchall()
-    print(rows)
     return rows
 
 def abort_if_todo_doesnt_exist(todo_id):
@@ -28,6 +27,9 @@ class Sector(Resource):
     def get(self, sector_id):
         result = dbQuery('SELECT * FROM entry INNER JOIN sector ON sector.id = entry.cluster_id INNER JOIN coordinate ON coordinate.sector_id = entry.cluster_id WHERE cluster_id = ' + sector_id + ' ORDER BY timestamp DESC')
         print(len(result))
+        if len(result) <= 0:
+            abort(404, message="Sector {} doesn't exist".format(sector_id))
+
         return result
 
 api.add_resource(Sector, '/sector/<sector_id>')
