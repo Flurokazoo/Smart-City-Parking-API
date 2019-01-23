@@ -8,12 +8,13 @@ DATABASE = 'C:/sqlite/parking_db.db'
 app = Flask(__name__)
 api = Api(app)
 
-conn = sqlite3.connect(DATABASE)
-cur = conn.cursor()
+conn = sqlite3.connect(DATABASE, check_same_thread=False)
 
 def dbQuery(query):
+    cur = conn.cursor()
     cur.execute(query)
     rows = cur.fetchall()
+    print(rows)
     return rows
 
 def abort_if_todo_doesnt_exist(todo_id):
@@ -25,8 +26,10 @@ parser.add_argument('task')
 
 class Sector(Resource):
     def get(self, sector_id):
-        dbQuery('SELECT * FROM entry WHERE sectorId = ' + sector_id + ' ORDER BY timestamp DESC LIMIT 1')
+        result = dbQuery('SELECT * FROM entry WHERE cluster_id = ' + sector_id + ' ORDER BY timestamp DESC LIMIT 1')
+        return result
 
+api.add_resource(Sector, '/sector/<sector_id>')
 
 
 if __name__ == '__main__':
