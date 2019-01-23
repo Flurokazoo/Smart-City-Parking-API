@@ -23,6 +23,11 @@ def abort_if_todo_doesnt_exist(todo_id):
 parser = reqparse.RequestParser()
 parser.add_argument('task')
 
+class Sector(Resource):
+    def get(self, sector_id):
+        dbQuery('SELECT * FROM entry WHERE sectorId = ' + sector_id + ' ORDER BY timestamp DESC LIMIT 1')
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
