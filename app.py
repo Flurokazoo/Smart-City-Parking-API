@@ -26,7 +26,8 @@ parser.add_argument('task')
 
 class Sector(Resource):
     def get(self, sector_id):
-        result = dbQuery('SELECT * FROM entry WHERE cluster_id = ' + sector_id + ' ORDER BY timestamp DESC LIMIT 1')
+        result = dbQuery('SELECT * FROM entry INNER JOIN sector ON sector.id = entry.cluster_id INNER JOIN coordinate ON coordinate.sector_id = entry.cluster_id WHERE cluster_id = ' + sector_id + ' ORDER BY timestamp DESC')
+        print(len(result))
         return result
 
 api.add_resource(Sector, '/sector/<sector_id>')
