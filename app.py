@@ -3,6 +3,7 @@ from flask import g
 from flask import jsonify
 from flask_restful import reqparse, abort, Api, Resource
 import sqlite3
+import json
 
 DATABASE = 'C:/Users/Jasper/Downloads/parking_db.db'
 
@@ -32,7 +33,32 @@ class Sector(Resource):
             abort(404, message="Sector {} doesn't exist".format(sector_id))
         
         items = [dict(zip([key[0] for key in cur.description], row)) for row in result]
-        return jsonify({'items': items})
+        coordinates = []
+        threshold = 0
+        count = 0
+        response = []
+        print(type(items))
+   
+        for val in items:
+            print(threshold)
+
+            if int(val['timestamp']) >= threshold:
+                coordinates.append({'latitude': val['latitude'], 'longitude': val['longtitude']})
+            if count < 1:
+                threshold = val['timestamp']
+                response.append({
+                'data': {
+                    'sector_id': val['sector_id'],
+                    'density': val['density'],
+                    'time': val['timestamp'],
+                    }
+                })
+            
+            else :
+                break
+            count = count + 1            
+        response.append(coordinates)
+        return response
 
 api.add_resource(Sector, '/sector/<sector_id>')
 
