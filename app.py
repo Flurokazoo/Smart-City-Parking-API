@@ -54,13 +54,13 @@ class Sector(Resource):
                 })
             if int(val['timestamp']) >= threshold:
                 coordinates.append({'latitude': val['latitude'], 'longitude': val['longtitude']})
-                
+
             else :
                 break
             count = count + 1            
         #response = jsonify(response)
         
-        response[0]['coordinates'] = coordinates
+        response[0]['data']['coordinates'] = coordinates
         return response
 
 api.add_resource(Sector, '/sector/<sector_id>')
