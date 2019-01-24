@@ -24,7 +24,7 @@ parser.add_argument('task')
 
 class Sector(Resource):
     def get(self, sector_id):
-        result = dbQuery('SELECT * FROM entry INNER JOIN sector ON sector.id = entry.cluster_id INNER JOIN coordinate ON coordinate.sector_id = entry.cluster_id WHERE cluster_id = ' + sector_id + ' ORDER BY timestamp DESC')
+        result = dbQuery('SELECT * FROM entry INNER JOIN sector ON sector.id = entry.cluster_id INNER JOIN coordinate ON coordinate.sector_id = entry.cluster_id INNER JOIN sensor ON sensor.sector_id = entry.cluster_id WHERE cluster_id = '+ sector_id + ' ORDER BY timestamp DESC')
         if len(result) <= 0:
             abort(404, message="Sector {} doesn't exist".format(sector_id))
         
