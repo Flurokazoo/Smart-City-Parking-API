@@ -36,7 +36,6 @@ class Sector(Resource):
         response = []
    
         for val in items:      
-            print(val)      
             skip = False
             sensorExists = False
             if count < 1:
@@ -49,7 +48,6 @@ class Sector(Resource):
                     }
                 })
             if val['timestamp'] >= threshold :
-
                 for cor in coordinates:
                     if cor['latitude'] == val['latitude'] and cor['longitude'] == val['longtitude']:
                         skip = True
@@ -72,7 +70,6 @@ class Sector(Resource):
         return response
 
 api.add_resource(Sector, '/sector/<sector_id>')
-
 
 if __name__ == '__main__':
     app.run(debug=True)
