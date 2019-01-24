@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import g
 from flask import jsonify
+from flask import request
 from flask_restful import reqparse, abort, Api, Resource
 import sqlite3
 import json
@@ -74,7 +75,42 @@ class Sector(Resource):
         response[0]['data']['sensors'] = sensors
         return response
 
+class Sectors(Resource):
+    def get(self):
+        response = []
+        coordinates = []
+        sectors = []
+        sensors = []
+        threshold = 0
+        count = 0
+        root = str(request.url_root)
+
+        idResult = dbQuery('SELECT id FROM sector')
+        idItems = [dict(zip([key[0] for key in cur.description], row)) for row in idResult]
+        for val in idItems:
+            response.append({
+                'data': {
+                    'sector_id': val['id']
+                }})
+
+        result = dbQuery('SELECT entry.timestamp, entry.density, entry.cluster_id, coordinate.latitude, coordinate.longtitude, sensor.id, sensor.parked FROM entry INNER JOIN coordinate ON coordinate.sector_id = entry.cluster_id INNER JOIN sensor ON sensor.sector_id = entry.cluster_id WHERE entry.timestamp = (SELECT MAX(entry.timestamp) FROM entry)  ORDER BY timestamp DESC')
+        items = [dict(zip([key[0] for key in cur.description], row)) for row in result]       
+   
+        for val in items:   
+            timestamp = int(val['timestamp'] / 1000) 
+            readable = datetime.fromtimestamp(timestamp).isoformat()
+            for res in response:
+                index = response.index(res)
+                sectorInt = int(res['data']['sector_id'])
+                if sectorInt == val['cluster_id']:
+                    response[index]['data']['density'] = val['density']
+                    response[index]['data']['timestamp'] = timestamp
+                    response[index]['data']['date'] = readable
+                    response[index]['data']['url'] = root + "sector/" + str(val['cluster_id'])
+        return response
+
 api.add_resource(Sector, '/sector/<sector_id>')
+api.add_resource(Sectors, '/sectors')
 
 if __name__ == '__main__':
     app.run(debug=True)
