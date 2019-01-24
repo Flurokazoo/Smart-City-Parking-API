@@ -30,17 +30,20 @@ class Sector(Resource):
         
         items = [dict(zip([key[0] for key in cur.description], row)) for row in result]
         coordinates = []
+        sensors = []
         threshold = 0
         count = 0
         response = []
    
-        for val in items:            
+        for val in items:      
+            print(val)      
             skip = False
+            sensorExists = False
             if count < 1:
                 threshold = val['timestamp']
                 response.append({
                 'data': {
-                    'sector_id': val['sector_id'],
+                    'sector_id': val['cluster_id'],
                     'density': val['density'],
                     'time': val['timestamp'],
                     }
@@ -51,13 +54,21 @@ class Sector(Resource):
                     if cor['latitude'] == val['latitude'] and cor['longitude'] == val['longtitude']:
                         skip = True
                         break
+
+                for sen in sensors:
+                    if sen['id'] == val['id']:
+                        sensorExists = True
+                        break
                 
                 if skip == False:
                     coordinates.append({'latitude': val['latitude'], 'longitude': val['longtitude']})
+                if sensorExists == False:
+                    sensors.append({'id': val['id'], 'parked': val['parked']})
             else :
                 break
             count = count + 1
         response[0]['data']['coordinates'] = coordinates
+        response[0]['data']['sensors'] = sensors
         return response
 
 api.add_resource(Sector, '/sector/<sector_id>')
