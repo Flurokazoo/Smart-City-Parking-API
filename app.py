@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import g
 from flask import jsonify
+from flask import request
 from flask_restful import reqparse, abort, Api, Resource
 import sqlite3
 import json
@@ -76,7 +77,51 @@ class Sector(Resource):
 
 class Sectors(Resource):
     def get(self):
-        response = 'response'
+        response = []
+        root = str(request.url_root)
+
+        idResult = dbQuery('SELECT id FROM sector')
+        idItems = [dict(zip([key[0] for key in cur.description], row)) for row in idResult]
+        sectors = []
+        for val in idItems:
+            response.append({
+                'data': {
+                    'sector_id': val['id']
+                }})
+
+        result = dbQuery('SELECT entry.timestamp, entry.density, entry.cluster_id, coordinate.latitude, coordinate.longtitude, sensor.id, sensor.parked FROM entry INNER JOIN coordinate ON coordinate.sector_id = entry.cluster_id INNER JOIN sensor ON sensor.sector_id = entry.cluster_id WHERE entry.timestamp = (SELECT MAX(entry.timestamp) FROM entry)  ORDER BY timestamp DESC')
+        
+        items = [dict(zip([key[0] for key in cur.description], row)) for row in result]
+        coordinates = []
+        sensors = []
+        threshold = 0
+        count = 0
+   
+        for val in items:   
+            timestamp = int(val['timestamp'] / 1000) 
+            readable = datetime.fromtimestamp(timestamp).isoformat()
+
+            skip = False
+            sensorExists = False
+            for res in response:
+                index = response.index(res)
+                sectorInt = int(res['data']['sector_id'])
+
+                if sectorInt == val['cluster_id']:
+                    threshold = val['timestamp']                   
+
+                    response[index]['data']['density'] = val['density']
+                    response[index]['data']['timestamp'] = timestamp
+                    response[index]['data']['date'] = readable
+                    response[index]['data']['url'] = root + "sector/" + str(val['cluster_id'])
+
+
+            
+
+           
+        # response[0]['data']['coordinates'] = coordinates
+        # response[0]['data']['sensors'] = sensors
+        # print(request.url_root)
         return response
 
 api.add_resource(Sector, '/sector/<sector_id>')
