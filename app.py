@@ -35,6 +35,7 @@ class Sector(Resource):
         response = []
    
         for val in items:            
+            skip = False
             if count < 1:
                 threshold = val['timestamp']
                 response.append({
@@ -44,8 +45,15 @@ class Sector(Resource):
                     'time': val['timestamp'],
                     }
                 })
-            if int(val['timestamp']) >= threshold:
-                coordinates.append({'latitude': val['latitude'], 'longitude': val['longtitude']})
+            if val['timestamp'] >= threshold :
+
+                for cor in coordinates:
+                    if cor['latitude'] == val['latitude'] and cor['longitude'] == val['longtitude']:
+                        skip = True
+                        break
+                
+                if skip == False:
+                    coordinates.append({'latitude': val['latitude'], 'longitude': val['longtitude']})
             else :
                 break
             count = count + 1
