@@ -74,7 +74,13 @@ class Sector(Resource):
         response[0]['data']['sensors'] = sensors
         return response
 
+class Sectors(Resource):
+    def get(self):
+        response = 'response'
+        return response
+
 api.add_resource(Sector, '/sector/<sector_id>')
+api.add_resource(Sectors, '/sectors')
 
 if __name__ == '__main__':
     app.run(debug=True)
