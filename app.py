@@ -4,6 +4,7 @@ from flask import jsonify
 from flask_restful import reqparse, abort, Api, Resource
 import sqlite3
 import json
+from datetime import datetime
 
 DATABASE = 'C:/Users/Jasper/Downloads/parking_db.db'
 
@@ -35,7 +36,10 @@ class Sector(Resource):
         count = 0
         response = []
    
-        for val in items:      
+        for val in items:   
+            timestamp = int(val['timestamp'] / 1000) 
+            readable = datetime.fromtimestamp(timestamp).isoformat()
+
             skip = False
             sensorExists = False
             if count < 1:
@@ -44,7 +48,8 @@ class Sector(Resource):
                 'data': {
                     'sector_id': val['cluster_id'],
                     'density': val['density'],
-                    'time': val['timestamp'],
+                    'timestamp': timestamp,
+                    'date': readable
                     }
                 })
             if val['timestamp'] >= threshold :
