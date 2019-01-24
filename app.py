@@ -109,8 +109,17 @@ class Sectors(Resource):
                     response[index]['data']['url'] = root + "sector/" + str(val['cluster_id'])
         return response
 
+class History(Resource):
+    def get(self, sector_id):
+
+        response = []
+        return response
+
+
 api.add_resource(Sector, '/sector/<sector_id>')
 api.add_resource(Sectors, '/sectors')
+api.add_resource(History, '/history/<sector_id>')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
