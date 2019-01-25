@@ -6,6 +6,7 @@ from flask_restful import reqparse, abort, Api, Resource
 import sqlite3
 import json
 from datetime import datetime
+import time
 
 DATABASE = 'C:/Users/Jasper/Downloads/parking_db.db'
 
@@ -116,7 +117,7 @@ class Sectors(Resource):
 
 #Class for historical data of specific cluster
 class History(Resource):
-    def get(self, sector_id):
+    def get(self, sector_id):   
         args = parser.parse_args()
         response = {
             "data": {
@@ -128,7 +129,22 @@ class History(Resource):
         if args['limit']:
             limit = str(args['limit'])    
         else:
-            limit = '200'             
+            limit = '200'
+
+        if args['start']:
+            start = args['start']
+        else:
+            start = 0
+
+        if args['end']:
+            end = args['end']
+        else:
+            end = int(time.time())
+
+        if args['interval'] >= 180:
+            interval = args['interval'] * 1000
+        else:
+            interval = 180 * 1000                 
 
         result = dbQuery('SELECT timestamp, density FROM entry WHERE cluster_id = ' + sector_id + ' ORDER BY timestamp DESC LIMIT ' + limit)
         if len(result) <= 0:
