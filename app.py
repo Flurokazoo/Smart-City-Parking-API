@@ -22,7 +22,7 @@ def dbQuery(query):
     return rows
 
 parser = reqparse.RequestParser()
-parser.add_argument('task')
+parser.add_argument('limit')
 
 class Sector(Resource):
     def get(self, sector_id):
@@ -109,8 +109,43 @@ class Sectors(Resource):
                     response[index]['data']['url'] = root + "sector/" + str(val['cluster_id'])
         return response
 
+class History(Resource):
+    def get(self, sector_id):
+        args = parser.parse_args()
+        response = {
+            "data": {
+                "sector_id": sector_id
+            }
+        }
+        response['data']['entries'] = []
+
+        if args['limit']:
+            try:
+                int(args['limit'])
+                limit = args['limit']                
+            except:
+                abort(400, message="Bad request")    
+        else:
+            limit = '200'             
+
+        result = dbQuery('SELECT timestamp, density FROM entry WHERE cluster_id = ' + sector_id + ' ORDER BY timestamp DESC LIMIT ' + limit)
+        if len(result) <= 0:
+            abort(404, message="Sector {} doesn't exist".format(sector_id))
+        
+        items = [dict(zip([key[0] for key in cur.description], row)) for row in result]
+        for val in items:
+            timestamp = int(val['timestamp'] / 1000) 
+            readable = datetime.fromtimestamp(timestamp).isoformat()
+            response['data']['entries'].append({
+                'density': val['density'],
+                'timestamp': val['timestamp'],
+                'date': readable
+            })
+        return response
+
 api.add_resource(Sector, '/sector/<sector_id>')
 api.add_resource(Sectors, '/sectors')
+api.add_resource(History, '/history/<sector_id>')
 
 if __name__ == '__main__':
     app.run(debug=True)
