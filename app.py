@@ -16,10 +16,10 @@ conn = sqlite3.connect(DATABASE, check_same_thread=False)
 cur = conn.cursor()
 
 parser = reqparse.RequestParser()
-parser.add_argument('limit')
-parser.add_argument('start')
-parser.add_argument('end')
-parser.add_argument('interval')
+parser.add_argument('limit', type=int, help='Parameter "limit" should be of type integer')
+parser.add_argument('start', type=int, help='Parameter "start" should be of type integer')
+parser.add_argument('end', type=int, help='Parameter "end" should be of type integer')
+parser.add_argument('interval', type=int, help='Parameter "interval" should be of type integer')
 
 # Function to query to database, returning all rows
 def dbQuery(query):
@@ -126,11 +126,7 @@ class History(Resource):
         response['data']['entries'] = []
 
         if args['limit']:
-            try:
-                int(args['limit'])
-                limit = args['limit']                
-            except:
-                abort(400, message="Bad request")    
+            limit = str(args['limit'])    
         else:
             limit = '200'             
 
