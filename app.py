@@ -22,7 +22,7 @@ def dbQuery(query):
     return rows
 
 parser = reqparse.RequestParser()
-parser.add_argument('task')
+parser.add_argument('limit')
 
 class Sector(Resource):
     def get(self, sector_id):
@@ -111,6 +111,8 @@ class Sectors(Resource):
 
 class History(Resource):
     def get(self, sector_id):
+        args = parser.parse_args()
+        print(args)
         response = {
             "data": {
                 "sector_id": sector_id
