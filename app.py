@@ -117,6 +117,7 @@ class History(Resource):
                 "sector_id": sector_id
             }
         }
+        response['data']['entries'] = []
 
         if args['limit']:
             try:
@@ -132,7 +133,14 @@ class History(Resource):
             abort(404, message="Sector {} doesn't exist".format(sector_id))
         
         items = [dict(zip([key[0] for key in cur.description], row)) for row in result]
-        response['data']['entries'] = items
+        for val in items:
+            timestamp = int(val['timestamp'] / 1000) 
+            readable = datetime.fromtimestamp(timestamp).isoformat()
+            response['data']['entries'].append({
+                'density': val['density'],
+                'timestamp': val['timestamp'],
+                'date': readable
+            })
         return response
 
 api.add_resource(Sector, '/sector/<sector_id>')
