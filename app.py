@@ -15,15 +15,16 @@ api = Api(app)
 conn = sqlite3.connect(DATABASE, check_same_thread=False)
 cur = conn.cursor()
 
+parser = reqparse.RequestParser()
+parser.add_argument('limit')
 
+# Function to query to database, returning all rows
 def dbQuery(query):
     cur.execute(query)
     rows = cur.fetchall()
     return rows
 
-parser = reqparse.RequestParser()
-parser.add_argument('limit')
-
+#Class for single sector
 class Sector(Resource):
     def get(self, sector_id):
         result = dbQuery('SELECT entry.timestamp, entry.density, entry.cluster_id, coordinate.latitude, coordinate.longtitude, sensor.id, sensor.parked FROM entry INNER JOIN coordinate ON coordinate.sector_id = entry.cluster_id INNER JOIN sensor ON sensor.sector_id = entry.cluster_id WHERE cluster_id = ' + sector_id + ' AND entry.timestamp = (SELECT MAX(entry.timestamp) FROM entry)  ORDER BY timestamp DESC')
@@ -75,6 +76,7 @@ class Sector(Resource):
         response[0]['data']['sensors'] = sensors
         return response
 
+#Class for all sectors collection
 class Sectors(Resource):
     def get(self):
         response = []
@@ -109,6 +111,7 @@ class Sectors(Resource):
                     response[index]['data']['url'] = root + "sector/" + str(val['cluster_id'])
         return response
 
+#Class for historical data of specific cluster
 class History(Resource):
     def get(self, sector_id):
         args = parser.parse_args()
@@ -143,6 +146,7 @@ class History(Resource):
             })
         return response
 
+# Add resources to the API
 api.add_resource(Sector, '/sector/<sector_id>')
 api.add_resource(Sectors, '/sectors')
 api.add_resource(History, '/history/<sector_id>')
