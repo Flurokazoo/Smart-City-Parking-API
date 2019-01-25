@@ -17,6 +17,9 @@ cur = conn.cursor()
 
 parser = reqparse.RequestParser()
 parser.add_argument('limit')
+parser.add_argument('start')
+parser.add_argument('end')
+parser.add_argument('interval')
 
 # Function to query to database, returning all rows
 def dbQuery(query):
