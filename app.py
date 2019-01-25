@@ -132,19 +132,19 @@ class History(Resource):
             limit = '200'
 
         if args['start']:
-            start = args['start']
+            start = str(args['start'])
         else:
-            start = 0
+            start = '0'
 
         if args['end']:
-            end = args['end']
+            end = str(args['end'])
         else:
-            end = int(time.time())
+            end = str(time.time())
 
         if args['interval'] >= 180:
-            interval = args['interval'] * 1000
+            interval = str(args['interval'] * 1000)
         else:
-            interval = 180 * 1000                 
+            interval = str(180 * 1000)                 
 
         result = dbQuery("SELECT timestamp, density FROM entry WHERE cluster_id = " + sector_id + " AND timestamp > " + start + "  AND timestamp < " + end + " GROUP BY ROUND(timestamp / " + interval + ") ORDER BY timestamp DESC")
         if len(result) <= 0:
