@@ -6,6 +6,7 @@ from flask_restful import reqparse, abort, Api, Resource
 import sqlite3
 import json
 from datetime import datetime
+import time
 
 DATABASE = 'C:/Users/Jasper/Downloads/parking_db.db'
 
@@ -16,7 +17,10 @@ conn = sqlite3.connect(DATABASE, check_same_thread=False)
 cur = conn.cursor()
 
 parser = reqparse.RequestParser()
-parser.add_argument('limit')
+parser.add_argument('limit', type=int, help='Parameter "limit" should be of type integer')
+parser.add_argument('start', type=int, help='Parameter "start" should be of type integer')
+parser.add_argument('end', type=int, help='Parameter "end" should be of type integer')
+parser.add_argument('interval', type=int, help='Parameter "interval" should be of type integer')
 
 # Function to query to database, returning all rows
 def dbQuery(query):
@@ -113,7 +117,7 @@ class Sectors(Resource):
 
 #Class for historical data of specific cluster
 class History(Resource):
-    def get(self, sector_id):
+    def get(self, sector_id):   
         args = parser.parse_args()
         response = {
             "data": {
@@ -123,17 +127,30 @@ class History(Resource):
         response['data']['entries'] = []
 
         if args['limit']:
-            try:
-                int(args['limit'])
-                limit = args['limit']                
-            except:
-                abort(400, message="Bad request")    
+            limit = str(args['limit'])    
         else:
-            limit = '200'             
+            limit = '200'
 
-        result = dbQuery('SELECT timestamp, density FROM entry WHERE cluster_id = ' + sector_id + ' ORDER BY timestamp DESC LIMIT ' + limit)
+        if args['start']:
+            start = str(args['start'] * 1000)
+        else:
+            start = '0'
+
+        if args['end']:
+            end = str(args['end'] * 1000)
+        else:
+            end = int(time.time()) * 1000
+            end = str(end)
+
+        if args['interval']:
+            interval = str(args['interval'] * 1000)
+        else:
+            interval = str(180 * 1000)                 
+
+        result = dbQuery("SELECT timestamp, density FROM entry WHERE cluster_id = " + sector_id + " AND timestamp > " + start + "  AND timestamp < " + end + " GROUP BY ROUND(timestamp / " + interval + ") ORDER BY timestamp DESC LIMIT " + limit)
+       
         if len(result) <= 0:
-            abort(404, message="Sector {} doesn't exist".format(sector_id))
+            abort(404, message="No results found for sector {} with given parameters".format(sector_id))
         
         items = [dict(zip([key[0] for key in cur.description], row)) for row in result]
         for val in items:
