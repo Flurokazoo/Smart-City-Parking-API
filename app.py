@@ -111,14 +111,19 @@ class Sectors(Resource):
 
 class History(Resource):
     def get(self, sector_id):
-        response = []
+        response = {
+            "data": {
+                "sector_id": sector_id
+            }
+        }        
 
         result = dbQuery('SELECT timestamp, density FROM entry WHERE cluster_id = ' + sector_id + ' ORDER BY timestamp DESC')
         if len(result) <= 0:
             abort(404, message="Sector {} doesn't exist".format(sector_id))
         
         items = [dict(zip([key[0] for key in cur.description], row)) for row in result]
-        return items
+        response['data']['entries'] = items
+        return response
 
 
 api.add_resource(Sector, '/sector/<sector_id>')
