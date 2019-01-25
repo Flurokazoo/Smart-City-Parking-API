@@ -146,7 +146,7 @@ class History(Resource):
         else:
             interval = 180 * 1000                 
 
-        result = dbQuery('SELECT timestamp, density FROM entry WHERE cluster_id = ' + sector_id + ' ORDER BY timestamp DESC LIMIT ' + limit)
+        result = dbQuery("SELECT timestamp, density FROM entry WHERE cluster_id = " + sector_id + " AND timestamp > " + start + "  AND timestamp < " + end + " GROUP BY ROUND(timestamp / " + interval + ") ORDER BY timestamp DESC")
         if len(result) <= 0:
             abort(404, message="Sector {} doesn't exist".format(sector_id))
         
