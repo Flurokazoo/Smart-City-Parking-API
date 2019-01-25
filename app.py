@@ -141,7 +141,7 @@ class History(Resource):
             readable = datetime.fromtimestamp(timestamp).isoformat()
             response['data']['entries'].append({
                 'density': val['density'],
-                'timestamp': val['timestamp'],
+                'timestamp': timestamp,
                 'date': readable
             })
         return response
