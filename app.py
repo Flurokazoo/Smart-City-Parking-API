@@ -121,10 +121,13 @@ class History(Resource):
         if args['limit']:
             try:
                 int(args['limit'])
+                limit = args['limit']                
             except:
-                abort(400, message="Bad request")                 
+                abort(400, message="Bad request")    
+        else:
+            limit = '200'             
 
-        result = dbQuery('SELECT timestamp, density FROM entry WHERE cluster_id = ' + sector_id + ' ORDER BY timestamp DESC')
+        result = dbQuery('SELECT timestamp, density FROM entry WHERE cluster_id = ' + sector_id + ' ORDER BY timestamp DESC LIMIT ' + limit)
         if len(result) <= 0:
             abort(404, message="Sector {} doesn't exist".format(sector_id))
         
