@@ -116,7 +116,13 @@ class History(Resource):
             "data": {
                 "sector_id": sector_id
             }
-        }        
+        }
+
+        if args['limit']:
+            try:
+                int(args['limit'])
+            except:
+                abort(400, message="Bad request")                 
 
         result = dbQuery('SELECT timestamp, density FROM entry WHERE cluster_id = ' + sector_id + ' ORDER BY timestamp DESC')
         if len(result) <= 0:
