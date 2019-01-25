@@ -112,7 +112,6 @@ class Sectors(Resource):
 class History(Resource):
     def get(self, sector_id):
         args = parser.parse_args()
-        print(args)
         response = {
             "data": {
                 "sector_id": sector_id
@@ -127,11 +126,9 @@ class History(Resource):
         response['data']['entries'] = items
         return response
 
-
 api.add_resource(Sector, '/sector/<sector_id>')
 api.add_resource(Sectors, '/sectors')
 api.add_resource(History, '/history/<sector_id>')
-
 
 if __name__ == '__main__':
     app.run(debug=True)
