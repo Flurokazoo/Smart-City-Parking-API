@@ -192,7 +192,7 @@ class Average(Resource):
         if args['interval']:
             interval = str(args['interval'] * 1000)
         else:
-            interval = str(180 * 1000)                 
+            interval = str(3600 * 1000)                 
 
         result = dbQuery("SELECT timestamp, AVG(density) AS density FROM entry WHERE cluster_id = " + sector_id + " AND timestamp > " + start + "  AND timestamp < " + end + " GROUP BY ROUND(timestamp / " + interval + ") ORDER BY timestamp DESC LIMIT " + limit)
        
