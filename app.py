@@ -202,10 +202,12 @@ class History(Resource):
                 'date': readable
             })            
         
-        if page * pageLimit < int(limit):
-            if prevPage > 0:
-                prevPageUrl = root + "history/" + str(sector_id) + "?page=" + str(prevPage) + startUrl + endUrl + intervalUrl + limitUrl
-                response['pagination']['prev_url'] = prevPageUrl                
+      
+        if prevPage > 0:
+            prevPageUrl = root + "history/" + str(sector_id) + "?page=" + str(prevPage) + startUrl + endUrl + intervalUrl + limitUrl
+            response['pagination']['prev_url'] = prevPageUrl   
+        
+        if page * pageLimit < int(limit) and len(items) >= pageLimit:             
             nextPageUrl = root + "history/" + str(sector_id) + "?page=" + str(nextPage) + startUrl + endUrl + intervalUrl + limitUrl
             response['pagination']['next_url'] = nextPageUrl
         response['metadata'] = {
