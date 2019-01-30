@@ -132,7 +132,12 @@ class History(Resource):
                 "sector_id": sector_id
             }
         }
-        page = int(args['page'])
+        root = str(request.url_root)
+        if args['page']:
+            page = int(args['page'])
+        else:
+            page = 1
+        
         pageLimit = 20
         offset = ((page - 1) * pageLimit)
         response['data']['entries'] = []
@@ -141,33 +146,46 @@ class History(Resource):
             limit = str(args['limit'])    
         else:
             limit = '100'
+
+        limitUrl = '&limit=' + limit
         #MAX AMOUNT OF FULL PAGES
         fullPageNo = math.floor(int(limit) / pageLimit)  
         #REMAINING ENTRIES ON NON FULL PAGE
         entriesModulo = int(limit) % pageLimit
+
+        nextPage = page + 1
+        
         if args['start']:
             start = str(args['start'] * 1000)
+            startUrl = '&start=' + str(args['start'])
         else:
             start = '0'
+            startUrl = ''
 
         if args['end']:
             end = str(args['end'] * 1000)
+            endUrl = '&end=' + str(args['end'])
         else:
             end = int(time.time()) * 1000
             end = str(end)
+            endUrl = ''
 
         if args['interval']:
             interval = str(args['interval'] * 1000)
+            intervalUrl = '&interval=' + str(args['interval'])
         else:
             interval = str(180 * 1000)
+            intervalUrl = ''
 
         if page == (fullPageNo + 1):
-            pageLimit = entriesModulo
+            queryLimit = entriesModulo
         elif page > (fullPageNo + 1):
-            pageLimit = 0
+            queryLimit = 0
+        else:
+            queryLimit = pageLimit
 
-        result = dbQuery("SELECT timestamp, density FROM entry WHERE cluster_id = " + sector_id + " AND timestamp > " + start + "  AND timestamp < " + end + " GROUP BY ROUND(timestamp / " + interval + ") ORDER BY timestamp DESC LIMIT " + str(pageLimit) + " OFFSET " + str(offset))
-        print("SELECT timestamp, density FROM entry WHERE cluster_id = " + sector_id + " AND timestamp > " + start + "  AND timestamp < " + end + " GROUP BY ROUND(timestamp / " + interval + ") ORDER BY timestamp DESC LIMIT " + str(pageLimit) + " OFFSET " + str(offset))
+        result = dbQuery("SELECT timestamp, density FROM entry WHERE cluster_id = " + sector_id + " AND timestamp > " + start + "  AND timestamp < " + end + " GROUP BY ROUND(timestamp / " + interval + ") ORDER BY timestamp DESC LIMIT " + str(queryLimit) + " OFFSET " + str(offset))
+        print("SELECT timestamp, density FROM entry WHERE cluster_id = " + sector_id + " AND timestamp > " + start + "  AND timestamp < " + end + " GROUP BY ROUND(timestamp / " + interval + ") ORDER BY timestamp DESC LIMIT " + str(queryLimit) + " OFFSET " + str(offset))
         if len(result) <= 0:
             abort(404, message="No results found for sector {} with given parameters".format(sector_id))
         
@@ -179,7 +197,11 @@ class History(Resource):
                 'density': val['density'],
                 'timestamp': timestamp,
                 'date': readable
-            })
+            })            
+        nextPageUrl = root + "history/" + str(sector_id) + "?page=" + str(nextPage) + startUrl + endUrl + intervalUrl + limitUrl
+        print(pageLimit)
+        if page * pageLimit < int(limit):
+            response['data']['next_url'] = nextPageUrl        
         return response
 
 class Average(Resource):
