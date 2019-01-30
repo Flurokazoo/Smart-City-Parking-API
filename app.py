@@ -156,6 +156,7 @@ class History(Resource):
         entriesModulo = int(limit) % pageLimit
 
         nextPage = page + 1
+        prevPage = page - 1
         
         if args['start']:
             start = str(args['start'] * 1000)
@@ -200,9 +201,13 @@ class History(Resource):
                 'timestamp': timestamp,
                 'date': readable
             })            
-        nextPageUrl = root + "history/" + str(sector_id) + "?page=" + str(nextPage) + startUrl + endUrl + intervalUrl + limitUrl
+        
         if page * pageLimit < int(limit):
-            response['pagination']['next_url'] = nextPageUrl        
+            if prevPage > 0:
+                prevPageUrl = root + "history/" + str(sector_id) + "?page=" + str(prevPage) + startUrl + endUrl + intervalUrl + limitUrl
+                response['pagination']['prev_url'] = prevPageUrl                
+            nextPageUrl = root + "history/" + str(sector_id) + "?page=" + str(nextPage) + startUrl + endUrl + intervalUrl + limitUrl
+            response['pagination']['next_url'] = nextPageUrl
         return response
 
 # Add resources to the API
