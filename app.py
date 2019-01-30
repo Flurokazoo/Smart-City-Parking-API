@@ -7,6 +7,7 @@ import sqlite3
 import json
 from datetime import datetime
 import time
+import math
 
 DATABASE = 'C:/Users/Jasper/Downloads/parking_db.db'
 
