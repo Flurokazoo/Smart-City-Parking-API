@@ -163,10 +163,17 @@ class History(Resource):
             })
         return response
 
+class Average(Resource):
+    def get(self, sector_id):
+        response = []
+
+        return response
 # Add resources to the API
 api.add_resource(Sector, '/sector/<sector_id>')
 api.add_resource(Sectors, '/sectors')
 api.add_resource(History, '/history/<sector_id>')
+api.add_resource(Average, '/average/<sector_id>')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
