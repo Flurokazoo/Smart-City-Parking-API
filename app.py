@@ -203,68 +203,10 @@ class History(Resource):
             response['data']['next_url'] = nextPageUrl        
         return response
 
-class Average(Resource):
-    def options(self, sector_id):
-        return '', 204, {'Allow': 'GET, OPTIONS'}
-    def get(self, sector_id):
-        args = parser.parse_args()
-        response = {
-            "data": {
-                "sector_id": sector_id
-            }
-        }
-        response['data']['entries'] = []
-
-        if args['limit']:
-            limit = str(args['limit'])    
-        else:
-            limit = '200'
-
-        if args['start']:
-            start = str(args['start'] * 1000)
-        else:
-            start = '0'
-
-        if args['end']:
-            end = str(args['end'] * 1000)
-        else:
-            end = int(time.time()) * 1000
-            end = str(end)
-
-        if args['interval']:
-            interval = str(args['interval'] * 1000)
-        else:
-            interval = str(3600 * 1000)                 
-
-        result = dbQuery("SELECT timestamp, AVG(density) AS density FROM entry WHERE cluster_id = " + sector_id + " AND timestamp > " + start + "  AND timestamp < " + end + " GROUP BY ROUND(timestamp / " + interval + ") ORDER BY timestamp DESC LIMIT " + limit)
-       
-        if len(result) <= 0:
-            abort(404, message="No results found for sector {} with given parameters".format(sector_id))
-        
-        items = [dict(zip([key[0] for key in cur.description], row)) for row in result]
-        for val in items:
-            timestampEnd = int(val['timestamp'] / 1000)
-            timestampStart = timestampEnd - (int(interval) / 1000) 
-            readableEnd = datetime.fromtimestamp(timestampEnd).isoformat()
-            readableStart = datetime.fromtimestamp(timestampStart).isoformat()
-            response['data']['entries'].append({
-                'density': val['density'],
-                'start': {
-                    'timestamp': timestampStart,
-                    'date': readableStart
-                },
-                'end': {
-                    'timestamp': timestampEnd,
-                    'date': readableEnd
-                }
-            })
-        return response
 # Add resources to the API
 api.add_resource(Sector, '/sector/<sector_id>')
 api.add_resource(Sectors, '/sectors')
 api.add_resource(History, '/history/<sector_id>')
-api.add_resource(Average, '/average/<sector_id>')
-
 
 if __name__ == '__main__':
     app.run(debug=True)
