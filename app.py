@@ -194,7 +194,7 @@ class Average(Resource):
         else:
             interval = str(180 * 1000)                 
 
-        result = dbQuery("SELECT timestamp, density FROM entry WHERE cluster_id = " + sector_id + " AND timestamp > " + start + "  AND timestamp < " + end + " GROUP BY ROUND(timestamp / " + interval + ") ORDER BY timestamp DESC LIMIT " + limit)
+        result = dbQuery("SELECT timestamp, AVG(density) AS density FROM entry WHERE cluster_id = " + sector_id + " AND timestamp > " + start + "  AND timestamp < " + end + " GROUP BY ROUND(timestamp / " + interval + ") ORDER BY timestamp DESC LIMIT " + limit)
        
         if len(result) <= 0:
             abort(404, message="No results found for sector {} with given parameters".format(sector_id))
