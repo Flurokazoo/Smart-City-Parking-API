@@ -30,6 +30,8 @@ def dbQuery(query):
 
 #Class for single sector
 class Sector(Resource):
+    def options(self, sector_id):
+        return '', 204, {'Allow': 'GET, OPTIONS'}
     def get(self, sector_id):
         result = dbQuery('SELECT entry.timestamp, entry.density, entry.cluster_id, coordinate.latitude, coordinate.longtitude, sensor.id, sensor.parked FROM entry INNER JOIN coordinate ON coordinate.sector_id = entry.cluster_id INNER JOIN sensor ON sensor.sector_id = entry.cluster_id WHERE cluster_id = ' + sector_id + ' AND entry.timestamp = (SELECT MAX(entry.timestamp) FROM entry)  ORDER BY timestamp DESC')
         if len(result) <= 0:
@@ -82,6 +84,8 @@ class Sector(Resource):
 
 #Class for all sectors collection
 class Sectors(Resource):
+    def options(self):
+        return '', 204, {'Allow': 'GET, OPTIONS'}
     def get(self):
         response = []
         coordinates = []
@@ -117,6 +121,8 @@ class Sectors(Resource):
 
 #Class for historical data of specific cluster
 class History(Resource):
+    def options(self, sector_id):
+        return '', 204, {'Allow': 'GET, OPTIONS'}
     def get(self, sector_id):   
         args = parser.parse_args()
         response = {
@@ -164,6 +170,8 @@ class History(Resource):
         return response
 
 class Average(Resource):
+    def options(self, sector_id):
+        return '', 204, {'Allow': 'GET, OPTIONS'}
     def get(self, sector_id):
         args = parser.parse_args()
         response = {
