@@ -130,7 +130,9 @@ class History(Resource):
         response = {
             "data": {
                 "sector_id": sector_id
-            }
+            },
+            "pagination": {},
+            "metadata": {}
         }
         root = str(request.url_root)
         if args['page']:
@@ -200,7 +202,7 @@ class History(Resource):
             })            
         nextPageUrl = root + "history/" + str(sector_id) + "?page=" + str(nextPage) + startUrl + endUrl + intervalUrl + limitUrl
         if page * pageLimit < int(limit):
-            response['data']['next_url'] = nextPageUrl        
+            response['pagination']['next_url'] = nextPageUrl        
         return response
 
 # Add resources to the API
