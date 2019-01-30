@@ -201,12 +201,20 @@ class Average(Resource):
         
         items = [dict(zip([key[0] for key in cur.description], row)) for row in result]
         for val in items:
-            timestamp = int(val['timestamp'] / 1000) 
-            readable = datetime.fromtimestamp(timestamp).isoformat()
+            timestampEnd = int(val['timestamp'] / 1000)
+            timestampStart = timestampEnd - (int(interval) / 1000) 
+            readableEnd = datetime.fromtimestamp(timestampEnd).isoformat()
+            readableStart = datetime.fromtimestamp(timestampStart).isoformat()
             response['data']['entries'].append({
                 'density': val['density'],
-                'timestamp': timestamp,
-                'date': readable
+                'start': {
+                    'timestamp': timestampStart,
+                    'date': readableStart
+                },
+                'end': {
+                    'timestamp': timestampEnd,
+                    'date': readableEnd
+                }
             })
         return response
 # Add resources to the API
