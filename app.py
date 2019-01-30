@@ -21,6 +21,7 @@ parser.add_argument('limit', type=int, help='Parameter "limit" should be of type
 parser.add_argument('start', type=int, help='Parameter "start" should be of type integer')
 parser.add_argument('end', type=int, help='Parameter "end" should be of type integer')
 parser.add_argument('interval', type=int, help='Parameter "interval" should be of type integer')
+parser.add_argument('page', type=int, help='Parameter "page" should be of type integer')
 
 # Function to query to database, returning all rows
 def dbQuery(query):
@@ -135,7 +136,7 @@ class History(Resource):
         if args['limit']:
             limit = str(args['limit'])    
         else:
-            limit = '200'
+            limit = '20'
 
         if args['start']:
             start = str(args['start'] * 1000)
