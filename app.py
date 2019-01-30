@@ -208,6 +208,11 @@ class History(Resource):
                 response['pagination']['prev_url'] = prevPageUrl                
             nextPageUrl = root + "history/" + str(sector_id) + "?page=" + str(nextPage) + startUrl + endUrl + intervalUrl + limitUrl
             response['pagination']['next_url'] = nextPageUrl
+        response['metadata'] = {
+            'status_code': 200,
+            'current_timestamp': int(time.time()),
+            'current_date': datetime.fromtimestamp(int(time.time())).isoformat()
+        }
         return response
 
 # Add resources to the API
