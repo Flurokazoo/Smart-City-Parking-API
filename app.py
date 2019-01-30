@@ -165,8 +165,49 @@ class History(Resource):
 
 class Average(Resource):
     def get(self, sector_id):
-        response = []
+        args = parser.parse_args()
+        response = {
+            "data": {
+                "sector_id": sector_id
+            }
+        }
+        response['data']['entries'] = []
 
+        if args['limit']:
+            limit = str(args['limit'])    
+        else:
+            limit = '200'
+
+        if args['start']:
+            start = str(args['start'] * 1000)
+        else:
+            start = '0'
+
+        if args['end']:
+            end = str(args['end'] * 1000)
+        else:
+            end = int(time.time()) * 1000
+            end = str(end)
+
+        if args['interval']:
+            interval = str(args['interval'] * 1000)
+        else:
+            interval = str(180 * 1000)                 
+
+        result = dbQuery("SELECT timestamp, density FROM entry WHERE cluster_id = " + sector_id + " AND timestamp > " + start + "  AND timestamp < " + end + " GROUP BY ROUND(timestamp / " + interval + ") ORDER BY timestamp DESC LIMIT " + limit)
+       
+        if len(result) <= 0:
+            abort(404, message="No results found for sector {} with given parameters".format(sector_id))
+        
+        items = [dict(zip([key[0] for key in cur.description], row)) for row in result]
+        for val in items:
+            timestamp = int(val['timestamp'] / 1000) 
+            readable = datetime.fromtimestamp(timestamp).isoformat()
+            response['data']['entries'].append({
+                'density': val['density'],
+                'timestamp': timestamp,
+                'date': readable
+            })
         return response
 # Add resources to the API
 api.add_resource(Sector, '/sector/<sector_id>')
