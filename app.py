@@ -184,8 +184,7 @@ class History(Resource):
         else:
             queryLimit = pageLimit
 
-        result = dbQuery("SELECT timestamp, density FROM entry WHERE cluster_id = " + sector_id + " AND timestamp > " + start + "  AND timestamp < " + end + " GROUP BY ROUND(timestamp / " + interval + ") ORDER BY timestamp DESC LIMIT " + str(queryLimit) + " OFFSET " + str(offset))
-        print("SELECT timestamp, density FROM entry WHERE cluster_id = " + sector_id + " AND timestamp > " + start + "  AND timestamp < " + end + " GROUP BY ROUND(timestamp / " + interval + ") ORDER BY timestamp DESC LIMIT " + str(queryLimit) + " OFFSET " + str(offset))
+        result = dbQuery("SELECT timestamp, density, AVG(density) AS average FROM entry WHERE cluster_id = " + sector_id + " AND timestamp > " + start + "  AND timestamp < " + end + " GROUP BY ROUND(timestamp / " + interval + ") ORDER BY timestamp DESC LIMIT " + str(queryLimit) + " OFFSET " + str(offset))
         if len(result) <= 0:
             abort(404, message="No results found for sector {} with given parameters".format(sector_id))
         
@@ -195,11 +194,11 @@ class History(Resource):
             readable = datetime.fromtimestamp(timestamp).isoformat()
             response['data']['entries'].append({
                 'density': val['density'],
+                'average_density': val['average'],
                 'timestamp': timestamp,
                 'date': readable
             })            
         nextPageUrl = root + "history/" + str(sector_id) + "?page=" + str(nextPage) + startUrl + endUrl + intervalUrl + limitUrl
-        print(pageLimit)
         if page * pageLimit < int(limit):
             response['data']['next_url'] = nextPageUrl        
         return response
