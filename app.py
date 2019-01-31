@@ -293,6 +293,11 @@ class Distance(Resource):
                 
         if not response['data']:
             abort(404, message="No sectors found within range")
+        response['metadata'] = {
+            'status_code': 200,
+            'current_timestamp': int(time.time()),
+            'current_date': datetime.fromtimestamp(int(time.time())).isoformat()
+        }
         return response
 
 # Add resources to the API
