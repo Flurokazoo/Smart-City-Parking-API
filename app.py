@@ -44,7 +44,7 @@ class Sector(Resource):
         sensors = []
         threshold = 0
         count = 0
-        response = []
+        response = {}
    
         for val in items:   
             timestamp = int(val['timestamp'] / 1000) 
@@ -54,14 +54,14 @@ class Sector(Resource):
             sensorExists = False
             if count < 1:
                 threshold = val['timestamp']
-                response.append({
-                'data': {
+                response['data'] = {
+                'sector_data': {
                     'sector_id': val['cluster_id'],
                     'density': val['density'],
                     'timestamp': timestamp,
                     'date': readable
                     }
-                })
+                }                
             if val['timestamp'] >= threshold :
                 for cor in coordinates:
                     if cor['latitude'] == val['latitude'] and cor['longitude'] == val['longtitude']:
@@ -80,8 +80,13 @@ class Sector(Resource):
             else :
                 break
             count = count + 1
-        response[0]['data']['coordinates'] = coordinates
-        response[0]['data']['sensors'] = sensors
+        response['data']['coordinates'] = coordinates
+        response['data']['sensors'] = sensors
+        response['metadata'] = {
+            'status_code': 200,
+            'current_timestamp': int(time.time()),
+            'current_date': datetime.fromtimestamp(int(time.time())).isoformat()
+        }
         return response
 
 #Class for all sectors collection
@@ -89,7 +94,8 @@ class Sectors(Resource):
     def options(self):
         return '', 204, {'Allow': 'GET, OPTIONS'}
     def get(self):
-        response = []
+        response = {}
+        response['data'] = []
         coordinates = []
         sectors = []
         sensors = []
@@ -100,10 +106,9 @@ class Sectors(Resource):
         idResult = dbQuery('SELECT id FROM sector')
         idItems = [dict(zip([key[0] for key in cur.description], row)) for row in idResult]
         for val in idItems:
-            response.append({
-                'data': {
-                    'sector_id': val['id']
-                }})
+            response['data'].append({
+                'sector_id': val['id']
+            })
 
         result = dbQuery('SELECT entry.timestamp, entry.density, entry.cluster_id, coordinate.latitude, coordinate.longtitude, sensor.id, sensor.parked FROM entry INNER JOIN coordinate ON coordinate.sector_id = entry.cluster_id INNER JOIN sensor ON sensor.sector_id = entry.cluster_id WHERE entry.timestamp = (SELECT MAX(entry.timestamp) FROM entry)  ORDER BY timestamp DESC')
         items = [dict(zip([key[0] for key in cur.description], row)) for row in result]       
@@ -111,14 +116,23 @@ class Sectors(Resource):
         for val in items:   
             timestamp = int(val['timestamp'] / 1000) 
             readable = datetime.fromtimestamp(timestamp).isoformat()
-            for res in response:
-                index = response.index(res)
-                sectorInt = int(res['data']['sector_id'])
+            for res in response['data']:
+                index = response['data'].index(res)
+                sectorInt = int(res['sector_id'])
                 if sectorInt == val['cluster_id']:
-                    response[index]['data']['density'] = val['density']
-                    response[index]['data']['timestamp'] = timestamp
-                    response[index]['data']['date'] = readable
-                    response[index]['data']['url'] = root + "sector/" + str(val['cluster_id'])
+                    response['data'][index]['density'] = val['density']
+                    response['data'][index]['timestamp'] = timestamp
+                    response['data'][index]['date'] = readable
+                    response['data'][index]['self_links'] = {
+                        "detail": root + "sector/" + str(val['cluster_id']),
+                        "history": root + "history/" + str(val['cluster_id'])
+                    }
+        
+        response['metadata'] = {
+            'status_code': 200,
+            'current_timestamp': int(time.time()),
+            'current_date': datetime.fromtimestamp(int(time.time())).isoformat()
+        }
         return response
 
 #Class for historical data of specific cluster
@@ -130,7 +144,9 @@ class History(Resource):
         response = {
             "data": {
                 "sector_id": sector_id
-            }
+            },
+            "pagination": {},
+            "metadata": {}
         }
         root = str(request.url_root)
         if args['page']:
@@ -145,7 +161,7 @@ class History(Resource):
         if args['limit']:
             limit = str(args['limit'])    
         else:
-            limit = '100'
+            limit = '1000'
 
         limitUrl = '&limit=' + limit
         #MAX AMOUNT OF FULL PAGES
@@ -154,6 +170,7 @@ class History(Resource):
         entriesModulo = int(limit) % pageLimit
 
         nextPage = page + 1
+        prevPage = page - 1
         
         if args['start']:
             start = str(args['start'] * 1000)
@@ -174,7 +191,7 @@ class History(Resource):
             interval = str(args['interval'] * 1000)
             intervalUrl = '&interval=' + str(args['interval'])
         else:
-            interval = str(180 * 1000)
+            interval = str(3600 * 1000)
             intervalUrl = ''
 
         if page == (fullPageNo + 1):
@@ -197,10 +214,20 @@ class History(Resource):
                 'average_density': val['average'],
                 'timestamp': timestamp,
                 'date': readable
-            })            
-        nextPageUrl = root + "history/" + str(sector_id) + "?page=" + str(nextPage) + startUrl + endUrl + intervalUrl + limitUrl
-        if page * pageLimit < int(limit):
-            response['data']['next_url'] = nextPageUrl        
+            })       
+      
+        if prevPage > 0:
+            prevPageUrl = root + "history/" + str(sector_id) + "?page=" + str(prevPage) + startUrl + endUrl + intervalUrl + limitUrl
+            response['pagination']['prev_url'] = prevPageUrl   
+        
+        if page * pageLimit < int(limit) and len(items) >= pageLimit:             
+            nextPageUrl = root + "history/" + str(sector_id) + "?page=" + str(nextPage) + startUrl + endUrl + intervalUrl + limitUrl
+            response['pagination']['next_url'] = nextPageUrl
+        response['metadata'] = {
+            'status_code': 200,
+            'current_timestamp': int(time.time()),
+            'current_date': datetime.fromtimestamp(int(time.time())).isoformat()
+        }
         return response
 
 # Add resources to the API
