@@ -240,6 +240,10 @@ class Distance(Resource):
     def options(self, sector_id):
         return '', 204, {'Allow': 'GET, OPTIONS'}
     def get(self):
+        args = parser.parse_args()
+
+        if not args['latitude'] or not args['longitude']:
+            abort(400, message="Need both latitude and longitude parameters")
         response = {}
         response['data'] = []
         average = []
@@ -267,9 +271,17 @@ class Distance(Resource):
                     average[i]['long'] = float(average[i]['long']) + float(val['longtitude'])
                     average[i]['count'] = int(average[i]['count'] + 1)
         for i, ave in enumerate(average):
-            average[i]['lat'] = str(round(Decimal(average[i]['lat'] / average[i]['count']), 6))
-            average[i]['long'] = str(round(Decimal(average[i]['long'] / average[i]['count']), 6))      
+            average[i]['lat'] = float(round(Decimal(average[i]['lat'] / average[i]['count']), 6))
+            average[i]['long'] = float(round(Decimal(average[i]['long'] / average[i]['count']), 6))     
+
+            target = (average[i]['lat'], average[i]['long'])
+            current = (float(args['latitude']), float(args['longitude']))
+            print(geodesic(target, current).km)
+
+            average[i]['distance'] = geodesic(target, current).km
+ 
              
+
         return average
 
 # Add resources to the API
