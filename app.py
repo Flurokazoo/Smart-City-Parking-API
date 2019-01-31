@@ -245,6 +245,11 @@ class Distance(Resource):
 
         if not args['latitude'] or not args['longitude']:
             abort(400, message="Need both latitude and longitude parameters")
+
+        if args['range']:
+            rangeKm = args['range']
+        else:
+            rangeKm = 1
         response = {}
         response['data'] = []
         average = []
@@ -263,7 +268,6 @@ class Distance(Resource):
         items = [dict(zip([key[0] for key in cur.description], row)) for row in result]
         for val in items:
             for i, ave in enumerate(average):
-                print(i)
                 if int(ave['id']) == int(val['cluster_id']):
                     average[i]['lat'] = float(average[i]['lat']) + float(val['latitude'])
                     average[i]['long'] = float(average[i]['long']) + float(val['longtitude'])
@@ -274,8 +278,10 @@ class Distance(Resource):
 
             target = (average[i]['lat'], average[i]['long'])
             current = (float(args['latitude']), float(args['longitude']))
-            distance = geodesic(target, current).km
-            if distance <= 1:
+            distance = round(geodesic(target, current).km, 3)
+            print(int(distance * 1000))
+            print(rangeKm)
+            if int(distance * 1000) <= rangeKm:
                 response['data'].append({
                     'sector_id': ave['id'],
                     'distance': distance,
@@ -284,7 +290,9 @@ class Distance(Resource):
                         'longitude': average[i]['long']
                     }
                 })
-            average[i]['distance'] = geodesic(target, current).km
+                
+        if not response['data']:
+            abort(404, message="No sectors found within range")
         return response
 
 # Add resources to the API
