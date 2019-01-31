@@ -94,7 +94,8 @@ class Sectors(Resource):
     def options(self):
         return '', 204, {'Allow': 'GET, OPTIONS'}
     def get(self):
-        response = []
+        response = {}
+        response['data'] = []
         coordinates = []
         sectors = []
         sensors = []
@@ -105,10 +106,9 @@ class Sectors(Resource):
         idResult = dbQuery('SELECT id FROM sector')
         idItems = [dict(zip([key[0] for key in cur.description], row)) for row in idResult]
         for val in idItems:
-            response.append({
-                'data': {
-                    'sector_id': val['id']
-                }})
+            response['data'].append({
+                'sector_id': val['id']
+            })
 
         result = dbQuery('SELECT entry.timestamp, entry.density, entry.cluster_id, coordinate.latitude, coordinate.longtitude, sensor.id, sensor.parked FROM entry INNER JOIN coordinate ON coordinate.sector_id = entry.cluster_id INNER JOIN sensor ON sensor.sector_id = entry.cluster_id WHERE entry.timestamp = (SELECT MAX(entry.timestamp) FROM entry)  ORDER BY timestamp DESC')
         items = [dict(zip([key[0] for key in cur.description], row)) for row in result]       
@@ -116,14 +116,14 @@ class Sectors(Resource):
         for val in items:   
             timestamp = int(val['timestamp'] / 1000) 
             readable = datetime.fromtimestamp(timestamp).isoformat()
-            for res in response:
-                index = response.index(res)
-                sectorInt = int(res['data']['sector_id'])
+            for res in response['data']:
+                index = response['data'].index(res)
+                sectorInt = int(res['sector_id'])
                 if sectorInt == val['cluster_id']:
-                    response[index]['data']['density'] = val['density']
-                    response[index]['data']['timestamp'] = timestamp
-                    response[index]['data']['date'] = readable
-                    response[index]['data']['url'] = root + "sector/" + str(val['cluster_id'])
+                    response['data'][index]['density'] = val['density']
+                    response['data'][index]['timestamp'] = timestamp
+                    response['data'][index]['date'] = readable
+                    response['data'][index]['url'] = root + "sector/" + str(val['cluster_id'])
         return response
 
 #Class for historical data of specific cluster
