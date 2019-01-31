@@ -8,6 +8,7 @@ import json
 from datetime import datetime
 import time
 import math
+from geopy.distance import geodesic
 
 DATABASE = 'C:/Users/Jasper/Downloads/parking_db.db'
 
