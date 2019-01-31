@@ -233,6 +233,8 @@ class History(Resource):
 
 #Class for finding nearest sectors
 class Distance(Resource):
+    def options(self, sector_id):
+        return '', 204, {'Allow': 'GET, OPTIONS'}
     def get(self):
         response = {}
         return response
