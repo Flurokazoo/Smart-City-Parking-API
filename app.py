@@ -82,6 +82,11 @@ class Sector(Resource):
             count = count + 1
         response['data']['coordinates'] = coordinates
         response['data']['sensors'] = sensors
+        response['metadata'] = {
+            'status_code': 200,
+            'current_timestamp': int(time.time()),
+            'current_date': datetime.fromtimestamp(int(time.time())).isoformat()
+        }
         return response
 
 #Class for all sectors collection
