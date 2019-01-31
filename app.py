@@ -8,6 +8,9 @@ import json
 from datetime import datetime
 import time
 import math
+from geopy.distance import geodesic
+import numpy
+from decimal import Decimal
 
 DATABASE = 'C:/Users/Jasper/Downloads/parking_db.db'
 
@@ -23,6 +26,9 @@ parser.add_argument('start', type=int, help='Parameter "start" should be of type
 parser.add_argument('end', type=int, help='Parameter "end" should be of type integer')
 parser.add_argument('interval', type=int, help='Parameter "interval" should be of type integer')
 parser.add_argument('page', type=int, help='Parameter "page" should be of type integer')
+parser.add_argument('latitude', type=float, help='Parameter "latitude" should be of type float')
+parser.add_argument('longitude', type=float, help='Parameter "longitude" should be of type float')
+parser.add_argument('range', type=int, help='Parameter "range" should be of type float')
 
 # Function to query to database, returning all rows
 def dbQuery(query):
@@ -230,10 +236,77 @@ class History(Resource):
         }
         return response
 
+#Class for finding nearest sectors
+class Distance(Resource):
+    def options(self, sector_id):
+        return '', 204, {'Allow': 'GET, OPTIONS'}
+    def get(self):
+        args = parser.parse_args()
+
+        if not args['latitude'] or not args['longitude']:
+            abort(400, message="Need both latitude and longitude parameters")
+
+        if args['range']:
+            rangeKm = args['range']
+        else:
+            rangeKm = 1
+        response = {}
+        response['data'] = []
+        average = []
+
+        idResult = dbQuery('SELECT id FROM sector')
+        idItems = [dict(zip([key[0] for key in cur.description], row)) for row in idResult]
+        for val in idItems:
+            average.append({
+                'id': val['id'],
+                'lat': float(0),
+                'long': float(0),
+                'count': 0,
+                'density': ''                
+            })
+
+        result = dbQuery('SELECT entry.density, entry.cluster_id, coordinate.latitude, coordinate.longtitude FROM entry INNER JOIN coordinate ON coordinate.sector_id = entry.cluster_id WHERE entry.timestamp = (SELECT MAX(entry.timestamp) FROM entry)  ORDER BY timestamp DESC')
+        items = [dict(zip([key[0] for key in cur.description], row)) for row in result]
+        for val in items:
+            for i, ave in enumerate(average):
+                if int(ave['id']) == int(val['cluster_id']):
+                    average[i]['lat'] = float(average[i]['lat']) + float(val['latitude'])
+                    average[i]['long'] = float(average[i]['long']) + float(val['longtitude'])
+                    average[i]['count'] = int(average[i]['count'] + 1)
+                    if not average[i]['density']:
+                        average[i]['density'] = val['density']
+        for i, ave in enumerate(average):
+            average[i]['lat'] = float(round(Decimal(average[i]['lat'] / average[i]['count']), 6))
+            average[i]['long'] = float(round(Decimal(average[i]['long'] / average[i]['count']), 6))     
+
+            target = (average[i]['lat'], average[i]['long'])
+            current = (float(args['latitude']), float(args['longitude']))
+            distance = round(geodesic(target, current).km, 3)
+            if int(distance * 1000) <= rangeKm:
+                response['data'].append({
+                    'sector_id': ave['id'],
+                    'distance': distance,
+                    'density': average[i]['density'],
+                    'destination': {
+                        'latitude': average[i]['lat'],
+                        'longitude': average[i]['long']
+                    }
+                })
+                
+        if not response['data']:
+            abort(404, message="No sectors found within range")
+        response['metadata'] = {
+            'status_code': 200,
+            'current_timestamp': int(time.time()),
+            'current_date': datetime.fromtimestamp(int(time.time())).isoformat()
+        }
+        return response
+
 # Add resources to the API
 api.add_resource(Sector, '/sector/<sector_id>')
 api.add_resource(Sectors, '/sectors')
 api.add_resource(History, '/history/<sector_id>')
+api.add_resource(Distance, '/distance')
 
 if __name__ == '__main__':
     app.run(debug=True)
