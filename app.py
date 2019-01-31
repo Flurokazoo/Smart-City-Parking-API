@@ -44,7 +44,7 @@ class Sector(Resource):
         sensors = []
         threshold = 0
         count = 0
-        response = []
+        response = {}
    
         for val in items:   
             timestamp = int(val['timestamp'] / 1000) 
@@ -54,14 +54,14 @@ class Sector(Resource):
             sensorExists = False
             if count < 1:
                 threshold = val['timestamp']
-                response.append({
-                'data': {
+                response['data'] = {
+                'sector_data': {
                     'sector_id': val['cluster_id'],
                     'density': val['density'],
                     'timestamp': timestamp,
                     'date': readable
                     }
-                })
+                }                
             if val['timestamp'] >= threshold :
                 for cor in coordinates:
                     if cor['latitude'] == val['latitude'] and cor['longitude'] == val['longtitude']:
@@ -80,8 +80,8 @@ class Sector(Resource):
             else :
                 break
             count = count + 1
-        response[0]['data']['coordinates'] = coordinates
-        response[0]['data']['sensors'] = sensors
+        response['data']['coordinates'] = coordinates
+        response['data']['sensors'] = sensors
         return response
 
 #Class for all sectors collection
@@ -200,8 +200,7 @@ class History(Resource):
                 'average_density': val['average'],
                 'timestamp': timestamp,
                 'date': readable
-            })            
-        
+            })       
       
         if prevPage > 0:
             prevPageUrl = root + "history/" + str(sector_id) + "?page=" + str(prevPage) + startUrl + endUrl + intervalUrl + limitUrl
