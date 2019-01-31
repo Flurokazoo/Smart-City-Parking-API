@@ -282,8 +282,6 @@ class Distance(Resource):
             target = (average[i]['lat'], average[i]['long'])
             current = (float(args['latitude']), float(args['longitude']))
             distance = round(geodesic(target, current).km, 3)
-            print(int(distance * 1000))
-            print(rangeKm)
             if int(distance * 1000) <= rangeKm:
                 response['data'].append({
                     'sector_id': ave['id'],
