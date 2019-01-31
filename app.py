@@ -123,7 +123,10 @@ class Sectors(Resource):
                     response['data'][index]['density'] = val['density']
                     response['data'][index]['timestamp'] = timestamp
                     response['data'][index]['date'] = readable
-                    response['data'][index]['url'] = root + "sector/" + str(val['cluster_id'])
+                    response['data'][index]['self_links'] = {
+                        "detail": root + "sector/" + str(val['cluster_id']),
+                        "history": root + "history/" + str(val['cluster_id'])
+                    }
         
         response['metadata'] = {
             'status_code': 200,
