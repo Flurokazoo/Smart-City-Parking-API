@@ -9,6 +9,8 @@ from datetime import datetime
 import time
 import math
 from geopy.distance import geodesic
+import numpy
+from decimal import Decimal
 
 DATABASE = 'C:/Users/Jasper/Downloads/parking_db.db'
 
