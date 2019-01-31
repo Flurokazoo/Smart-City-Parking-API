@@ -124,6 +124,12 @@ class Sectors(Resource):
                     response['data'][index]['timestamp'] = timestamp
                     response['data'][index]['date'] = readable
                     response['data'][index]['url'] = root + "sector/" + str(val['cluster_id'])
+        
+        response['metadata'] = {
+            'status_code': 200,
+            'current_timestamp': int(time.time()),
+            'current_date': datetime.fromtimestamp(int(time.time())).isoformat()
+        }
         return response
 
 #Class for historical data of specific cluster
