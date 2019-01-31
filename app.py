@@ -233,7 +233,7 @@ class History(Resource):
 
 #Class for finding nearest sectors
 class Distance(Resource):
-    def get(self, sector_id):
+    def get(self):
         response = {}
         return response
 
