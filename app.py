@@ -261,7 +261,8 @@ class Distance(Resource):
                 'id': val['id'],
                 'lat': float(0),
                 'long': float(0),
-                'count': 0
+                'count': 0,
+                'density': ''                
             })
 
         result = dbQuery('SELECT entry.density, entry.cluster_id, coordinate.latitude, coordinate.longtitude FROM entry INNER JOIN coordinate ON coordinate.sector_id = entry.cluster_id WHERE entry.timestamp = (SELECT MAX(entry.timestamp) FROM entry)  ORDER BY timestamp DESC')
@@ -272,6 +273,8 @@ class Distance(Resource):
                     average[i]['lat'] = float(average[i]['lat']) + float(val['latitude'])
                     average[i]['long'] = float(average[i]['long']) + float(val['longtitude'])
                     average[i]['count'] = int(average[i]['count'] + 1)
+                    if not average[i]['density']:
+                        average[i]['density'] = val['density']
         for i, ave in enumerate(average):
             average[i]['lat'] = float(round(Decimal(average[i]['lat'] / average[i]['count']), 6))
             average[i]['long'] = float(round(Decimal(average[i]['long'] / average[i]['count']), 6))     
@@ -285,6 +288,7 @@ class Distance(Resource):
                 response['data'].append({
                     'sector_id': ave['id'],
                     'distance': distance,
+                    'density': average[i]['density'],
                     'destination': {
                         'latitude': average[i]['lat'],
                         'longitude': average[i]['long']
