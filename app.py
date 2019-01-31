@@ -239,9 +239,36 @@ class Distance(Resource):
         return '', 204, {'Allow': 'GET, OPTIONS'}
     def get(self):
         response = {}
+        response['data'] = []
+        average = []
+
+        idResult = dbQuery('SELECT id FROM sector')
+        idItems = [dict(zip([key[0] for key in cur.description], row)) for row in idResult]
+        for val in idItems:
+            response['data'].append({
+                'sector_id': val['id']
+            })
+            average.append({
+                'id': val['id'],
+                'lat': float(0),
+                'long': float(0),
+                'count': 0
+            })
+
         result = dbQuery('SELECT entry.density, entry.cluster_id, coordinate.latitude, coordinate.longtitude FROM entry INNER JOIN coordinate ON coordinate.sector_id = entry.cluster_id WHERE entry.timestamp = (SELECT MAX(entry.timestamp) FROM entry)  ORDER BY timestamp DESC')
         items = [dict(zip([key[0] for key in cur.description], row)) for row in result]
-        return response
+        for val in items:
+            for i, ave in enumerate(average):
+                print(i)
+                if int(ave['id']) == int(val['cluster_id']):
+                    average[i]['lat'] = float(average[i]['lat']) + float(val['latitude'])
+                    average[i]['long'] = float(average[i]['long']) + float(val['longtitude'])
+                    average[i]['count'] = int(average[i]['count'] + 1)
+        for i, ave in enumerate(average):
+            average[i]['lat'] = str(round(Decimal(average[i]['lat'] / average[i]['count']), 6))
+            average[i]['long'] = str(round(Decimal(average[i]['long'] / average[i]['count']), 6))      
+             
+        return average
 
 # Add resources to the API
 api.add_resource(Sector, '/sector/<sector_id>')
