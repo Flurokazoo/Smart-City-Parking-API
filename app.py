@@ -161,7 +161,7 @@ class History(Resource):
         if args['limit']:
             limit = str(args['limit'])    
         else:
-            limit = '100'
+            limit = '1000'
 
         limitUrl = '&limit=' + limit
         #MAX AMOUNT OF FULL PAGES
@@ -191,7 +191,7 @@ class History(Resource):
             interval = str(args['interval'] * 1000)
             intervalUrl = '&interval=' + str(args['interval'])
         else:
-            interval = str(180 * 1000)
+            interval = str(3600 * 1000)
             intervalUrl = ''
 
         if page == (fullPageNo + 1):
