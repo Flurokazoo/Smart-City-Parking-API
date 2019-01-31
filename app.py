@@ -26,6 +26,8 @@ parser.add_argument('start', type=int, help='Parameter "start" should be of type
 parser.add_argument('end', type=int, help='Parameter "end" should be of type integer')
 parser.add_argument('interval', type=int, help='Parameter "interval" should be of type integer')
 parser.add_argument('page', type=int, help='Parameter "page" should be of type integer')
+parser.add_argument('latitude', type=float, help='Parameter "latitude" should be of type float')
+parser.add_argument('longitude', type=float, help='Parameter "longitude" should be of type float')
 
 # Function to query to database, returning all rows
 def dbQuery(query):
