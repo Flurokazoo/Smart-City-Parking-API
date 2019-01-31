@@ -251,9 +251,6 @@ class Distance(Resource):
         idResult = dbQuery('SELECT id FROM sector')
         idItems = [dict(zip([key[0] for key in cur.description], row)) for row in idResult]
         for val in idItems:
-            response['data'].append({
-                'sector_id': val['id']
-            })
             average.append({
                 'id': val['id'],
                 'lat': float(0),
@@ -276,13 +273,18 @@ class Distance(Resource):
 
             target = (average[i]['lat'], average[i]['long'])
             current = (float(args['latitude']), float(args['longitude']))
-            print(geodesic(target, current).km)
-
+            distance = geodesic(target, current).km
+            if distance <= 1:
+                response['data'].append({
+                    'sector_id': ave['id'],
+                    'distance': distance,
+                    'destination': {
+                        'latitude': average[i]['lat'],
+                        'longitude': average[i]['long']
+                    }
+                })
             average[i]['distance'] = geodesic(target, current).km
- 
-             
-
-        return average
+        return response
 
 # Add resources to the API
 api.add_resource(Sector, '/sector/<sector_id>')
