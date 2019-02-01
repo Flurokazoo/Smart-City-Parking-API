@@ -63,7 +63,7 @@ class Sector(Resource):
                 response['data'] = {
                 'sector_data': {
                     'sector_id': val['cluster_id'],
-                    'density': val['density'],
+                    'occupance_percentage': val['density'],
                     'timestamp': timestamp,
                     'date': readable
                     }
@@ -126,7 +126,7 @@ class Sectors(Resource):
                 index = response['data'].index(res)
                 sectorInt = int(res['sector_id'])
                 if sectorInt == val['cluster_id']:
-                    response['data'][index]['density'] = val['density']
+                    response['data'][index]['occupance_percentage'] = val['density']
                     response['data'][index]['timestamp'] = timestamp
                     response['data'][index]['date'] = readable
                     response['data'][index]['self_links'] = {
@@ -216,8 +216,8 @@ class History(Resource):
             timestamp = int(val['timestamp'] / 1000) 
             readable = datetime.fromtimestamp(timestamp).isoformat()
             response['data']['entries'].append({
-                'density': val['density'],
-                'average_density': val['average'],
+                'occupance_percentage': val['density'],
+                'average_occupance': val['average'],
                 'timestamp': timestamp,
                 'date': readable
             })       
@@ -262,7 +262,7 @@ class Distance(Resource):
                 'lat': float(0),
                 'long': float(0),
                 'count': 0,
-                'density': ''                
+                'occupance_percentage': ''                
             })
 
         result = dbQuery('SELECT entry.density, entry.cluster_id, coordinate.latitude, coordinate.longtitude FROM entry INNER JOIN coordinate ON coordinate.sector_id = entry.cluster_id WHERE entry.timestamp = (SELECT MAX(entry.timestamp) FROM entry)  ORDER BY timestamp DESC')
@@ -286,7 +286,7 @@ class Distance(Resource):
                 response['data'].append({
                     'sector_id': ave['id'],
                     'distance': distance,
-                    'density': average[i]['density'],
+                    'occupance_percentage': average[i]['density'],
                     'destination': {
                         'latitude': average[i]['lat'],
                         'longitude': average[i]['long']
