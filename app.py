@@ -303,6 +303,11 @@ class Distance(Resource):
         }
         return response
 
+class Grid(Resource):
+    def get(self):
+        response = {}
+        return response
+
 # Add resources to the API
 api.add_resource(Sector, '/sector/<sector_id>')
 api.add_resource(Sectors, '/sectors')
