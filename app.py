@@ -11,6 +11,7 @@ import math
 from geopy.distance import geodesic
 import numpy
 from decimal import Decimal
+from shapely.geometry import Polygon
 
 DATABASE = 'C:/Users/Jasper/Downloads/parking_db.db'
 
