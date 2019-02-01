@@ -315,6 +315,7 @@ api.add_resource(Sector, '/sector/<sector_id>')
 api.add_resource(Sectors, '/sectors')
 api.add_resource(History, '/history/<sector_id>')
 api.add_resource(Distance, '/distance')
+api.add_resource(Grid, '/grid')
 
 if __name__ == '__main__':
     app.run(debug=True)
