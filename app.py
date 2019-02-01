@@ -273,8 +273,8 @@ class Distance(Resource):
                     average[i]['lat'] = float(average[i]['lat']) + float(val['latitude'])
                     average[i]['long'] = float(average[i]['long']) + float(val['longtitude'])
                     average[i]['count'] = int(average[i]['count'] + 1)
-                    if not average[i]['density']:
-                        average[i]['density'] = val['density']
+                    if not average[i]['occupance_percentage']:
+                        average[i]['occupance_percentage'] = val['density']
         for i, ave in enumerate(average):
             average[i]['lat'] = float(round(Decimal(average[i]['lat'] / average[i]['count']), 6))
             average[i]['long'] = float(round(Decimal(average[i]['long'] / average[i]['count']), 6))     
@@ -286,7 +286,7 @@ class Distance(Resource):
                 response['data'].append({
                     'sector_id': ave['id'],
                     'distance': distance,
-                    'occupance_percentage': average[i]['density'],
+                    'occupance_percentage': average[i]['occupance_percentage'],
                     'destination': {
                         'latitude': average[i]['lat'],
                         'longitude': average[i]['long']
