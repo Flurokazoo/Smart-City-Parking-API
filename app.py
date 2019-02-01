@@ -308,6 +308,10 @@ class Grid(Resource):
         return '', 204, {'Allow': 'GET, OPTIONS'}
     def get(self):
         response = {}
+        
+        result = dbQuery('SELECT entry.density, entry.cluster_id, coordinate.latitude, coordinate.longtitude FROM entry INNER JOIN coordinate ON coordinate.sector_id = entry.cluster_id WHERE entry.timestamp = (SELECT MAX(entry.timestamp) FROM entry)  ORDER BY timestamp DESC')
+        items = [dict(zip([key[0] for key in cur.description], row)) for row in result]
+
         return response
 
 # Add resources to the API
