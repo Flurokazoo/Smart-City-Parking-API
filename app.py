@@ -304,6 +304,8 @@ class Distance(Resource):
         return response
 
 class Grid(Resource):
+    def options(self, sector_id):
+        return '', 204, {'Allow': 'GET, OPTIONS'}
     def get(self):
         response = {}
         return response
