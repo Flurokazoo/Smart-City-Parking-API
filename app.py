@@ -310,10 +310,24 @@ class Grid(Resource):
         return '', 204, {'Allow': 'GET, OPTIONS'}
     def get(self):
         args = parser.parse_args()
-        coordinates = ast.literal_eval(args['grid'])
+        try:
+            coordinates = ast.literal_eval(args['grid'])
+        except:
+            abort(400, message="Grid parameter needs to be an array")
+
         response = {}
         details = []
         polygons = []
+
+        if isinstance(coordinates, list):
+            for val in coordinates:
+                if isinstance(val, list):
+                    print(val)
+                else:
+                    abort(400, message="Grid array needs to be multidimensional")
+        else:
+            abort(400, message="Grid parameter needs to be an array")
+
 
         idResult = dbQuery('SELECT id FROM sector')
         idItems = [dict(zip([key[0] for key in cur.description], row)) for row in idResult]
