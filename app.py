@@ -309,6 +309,8 @@ class Grid(Resource):
     def options(self, sector_id):
         return '', 204, {'Allow': 'GET, OPTIONS'}
     def get(self):
+        args = parser.parse_args()
+        coordinates = ast.literal_eval(args['grid'])
         response = {}
         details = []
         polygons = []
