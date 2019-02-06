@@ -320,11 +320,18 @@ class Grid(Resource):
         polygons = []
 
         if isinstance(coordinates, list):
+            count = 0
             for val in coordinates:
+                count = count + 1
                 if isinstance(val, list):
-                    print(val)
+                    try: 
+                        val[1]
+                    except:
+                        abort(400, message="Grid array needs two sets of coordinates")
                 else:
                     abort(400, message="Grid array needs to be multidimensional")
+            if count < 3:
+                abort(400, message="Grid array needs to have a least 3 sets of coordinates")
         else:
             abort(400, message="Grid parameter needs to be an array")
 
