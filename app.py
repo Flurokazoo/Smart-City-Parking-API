@@ -310,6 +310,7 @@ class Grid(Resource):
         return '', 204, {'Allow': 'GET, OPTIONS'}
     def get(self):
         args = parser.parse_args()
+        root = str(request.url_root)
         try:
             coordinates = ast.literal_eval(args['grid'])
         except:
@@ -354,7 +355,11 @@ class Grid(Resource):
                     'sector_id': val['id'],
                     'occupance_percentage': ''               
                     },
-                'coordinates': ()                                   
+                'coordinates': (),
+                'self_links': {
+                    "detail": root + "sector/" + str(val['id']),
+                    "history": root + "history/" + str(val['id'])
+                }                                   
             })
         
         result = dbQuery('SELECT entry.density, entry.cluster_id, coordinate.latitude, coordinate.longtitude FROM entry INNER JOIN coordinate ON coordinate.sector_id = entry.cluster_id WHERE entry.timestamp = (SELECT MAX(entry.timestamp) FROM entry)  ORDER BY timestamp DESC')
