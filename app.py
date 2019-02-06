@@ -331,12 +331,9 @@ class Grid(Resource):
                     try:
                         val[2]
                     except:
-                        #SUCCESFUL CODE TRIGGERS HERE
                         for cor in val:
-                            if isinstance(cor, float) or isinstance(cor, int):
-                                print('floats')
-                            else:
-                                abort(400, message="All coordinates need to be of type integer or type float")
+                            if not isinstance(cor, float) and not isinstance(cor, int):
+                                abort(400, message="All coordinates need to be of type integer or type float")                               
                     else:
                         abort(400, message="Grid array needs two sets of coordinates")
                 else:
@@ -345,7 +342,9 @@ class Grid(Resource):
                 abort(400, message="Grid array needs to have a least 3 sets of coordinates")
         else:
             abort(400, message="Grid parameter needs to be an array")
-
+        
+        coordinates = tuple(coordinates)
+        originalPolygon = Polygon(coordinates)
 
         idResult = dbQuery('SELECT id FROM sector')
         idItems = [dict(zip([key[0] for key in cur.description], row)) for row in idResult]
@@ -367,8 +366,7 @@ class Grid(Resource):
 
         for det in details:
             polygons.append(Polygon(det['coordinates']))
-        print(polygons)
-
+        
         return details
 
 # Add resources to the API
