@@ -367,6 +367,10 @@ class Grid(Resource):
         for det in details:
             polygons.append(Polygon(det['coordinates']))
         
+        for i, polygon in enumerate(polygons):
+            if originalPolygon.intersects(polygon):
+                print(details[i])
+
         return details
 
 # Add resources to the API
