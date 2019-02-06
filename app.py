@@ -30,6 +30,7 @@ parser.add_argument('page', type=int, help='Parameter "page" should be of type i
 parser.add_argument('latitude', type=float, help='Parameter "latitude" should be of type float')
 parser.add_argument('longitude', type=float, help='Parameter "longitude" should be of type float')
 parser.add_argument('range', type=int, help='Parameter "range" should be of type float')
+parser.add_argument('grid', type=list, help='Parameter should be of type list')
 
 # Function to query to database, returning all rows
 def dbQuery(query):
