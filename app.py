@@ -314,8 +314,8 @@ class Grid(Resource):
             coordinates = ast.literal_eval(args['grid'])
         except:
             abort(400, message="Grid parameter needs to be an array")
-
         response = {}
+        response['data'] = []
         details = []
         polygons = []
 
@@ -374,8 +374,9 @@ class Grid(Resource):
         for i, polygon in enumerate(polygons):
             if originalPolygon.intersects(polygon):
                 print(details[i])
+                response['data'].append(details[i])
 
-        return details
+        return response
 
 # Add resources to the API
 api.add_resource(Sector, '/sector/<sector_id>')
