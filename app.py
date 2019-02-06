@@ -350,23 +350,28 @@ class Grid(Resource):
         idItems = [dict(zip([key[0] for key in cur.description], row)) for row in idResult]
         for val in idItems:
             details.append({
-                'id': val['id'],                
-                'coordinates': ()                
+                'data': {
+                    'sector_data': {
+                        'sector_id': val['id'],
+                        'occupance_percentage': ''               
+                    },
+                    'coordinates': ()                     
+                }                               
             })
         
         result = dbQuery('SELECT entry.density, entry.cluster_id, coordinate.latitude, coordinate.longtitude FROM entry INNER JOIN coordinate ON coordinate.sector_id = entry.cluster_id WHERE entry.timestamp = (SELECT MAX(entry.timestamp) FROM entry)  ORDER BY timestamp DESC')
         items = [dict(zip([key[0] for key in cur.description], row)) for row in result]
         for val in items:
             for i, det in enumerate(details):
-                if int(det['id']) == int(val['cluster_id']):
+                if int(det['data']['sector_data']['sector_id']) == int(val['cluster_id']):
                     values = (float(val['latitude']), float(val['longtitude']))
-                    details[i]['coordinates'] = list(details[i]['coordinates'])
-                    details[i]['coordinates'].append(values)
-                    details[i]['coordinates'] = tuple(details[i]['coordinates'])
-                    details[i]['density'] = val['density']
+                    details[i]['data']['coordinates'] = list(details[i]['data']['coordinates'])
+                    details[i]['data']['coordinates'].append(values)
+                    details[i]['data']['coordinates'] = tuple(details[i]['data']['coordinates'])
+                    details[i]['data']['sector_data']['occupance_percentage'] = val['density']
 
         for det in details:
-            polygons.append(Polygon(det['coordinates']))
+            polygons.append(Polygon(det['data']['coordinates']))
         
         for i, polygon in enumerate(polygons):
             if originalPolygon.intersects(polygon):
