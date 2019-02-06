@@ -328,6 +328,17 @@ class Grid(Resource):
                         val[1]
                     except:
                         abort(400, message="Grid array needs two sets of coordinates")
+                    try:
+                        val[2]
+                    except:
+                        #SUCCESFUL CODE TRIGGERS HERE
+                        for cor in val:
+                            if isinstance(cor, float) or isinstance(cor, int):
+                                print('floats')
+                            else:
+                                abort(400, message="All coordinates need to be of type integer or type float")
+                    else:
+                        abort(400, message="Grid array needs two sets of coordinates")
                 else:
                     abort(400, message="Grid array needs to be multidimensional")
             if count < 3:
