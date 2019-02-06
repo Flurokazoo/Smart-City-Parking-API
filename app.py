@@ -363,6 +363,7 @@ class Grid(Resource):
                     details[i]['coordinates'] = list(details[i]['coordinates'])
                     details[i]['coordinates'].append(values)
                     details[i]['coordinates'] = tuple(details[i]['coordinates'])
+                    details[i]['density'] = val['density']
 
         for det in details:
             polygons.append(Polygon(det['coordinates']))
