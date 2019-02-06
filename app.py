@@ -31,7 +31,7 @@ parser.add_argument('page', type=int, help='Parameter "page" should be of type i
 parser.add_argument('latitude', type=float, help='Parameter "latitude" should be of type float')
 parser.add_argument('longitude', type=float, help='Parameter "longitude" should be of type float')
 parser.add_argument('range', type=int, help='Parameter "range" should be of type float')
-parser.add_argument('grid', type=list, help='Parameter should be of type list')
+parser.add_argument('grid')
 
 # Function to query to database, returning all rows
 def dbQuery(query):
@@ -332,7 +332,6 @@ class Grid(Resource):
                     details[i]['coordinates'] = tuple(details[i]['coordinates'])
 
         for det in details:
-            print('s')
             polygons.append(Polygon(det['coordinates']))
         print(polygons)
 
