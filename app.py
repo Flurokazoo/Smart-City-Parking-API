@@ -11,6 +11,8 @@ import math
 from geopy.distance import geodesic
 import numpy
 from decimal import Decimal
+from shapely.geometry import Polygon
+import ast
 
 DATABASE = 'C:/Users/Jasper/Downloads/parking_db.db'
 
@@ -29,6 +31,7 @@ parser.add_argument('page', type=int, help='Parameter "page" should be of type i
 parser.add_argument('latitude', type=float, help='Parameter "latitude" should be of type float')
 parser.add_argument('longitude', type=float, help='Parameter "longitude" should be of type float')
 parser.add_argument('range', type=int, help='Parameter "range" should be of type float')
+parser.add_argument('grid')
 
 # Function to query to database, returning all rows
 def dbQuery(query):
@@ -302,11 +305,96 @@ class Distance(Resource):
         }
         return response
 
+class Grid(Resource):
+    def options(self, sector_id):
+        return '', 204, {'Allow': 'GET, OPTIONS'}
+    def get(self):
+        args = parser.parse_args()
+        root = str(request.url_root)
+        try:
+            coordinates = ast.literal_eval(args['grid'])
+        except:
+            abort(400, message="Grid parameter needs to be an array")
+        response = {}
+        response['data'] = []
+        details = []
+        polygons = []
+
+        if isinstance(coordinates, list):
+            count = 0
+            for val in coordinates:
+                count = count + 1
+                if isinstance(val, list):
+                    try: 
+                        val[1]
+                    except:
+                        abort(400, message="Grid array needs two sets of coordinates")
+                    try:
+                        val[2]
+                    except:
+                        for cor in val:
+                            if not isinstance(cor, float) and not isinstance(cor, int):
+                                abort(400, message="All coordinates need to be of type integer or type float")                               
+                    else:
+                        abort(400, message="Grid array needs two sets of coordinates")
+                else:
+                    abort(400, message="Grid array needs to be multidimensional")
+            if count < 3:
+                abort(400, message="Grid array needs to have a least 3 sets of coordinates")
+        else:
+            abort(400, message="Grid parameter needs to be an array")
+        
+        coordinates = tuple(coordinates)
+        originalPolygon = Polygon(coordinates)
+
+        idResult = dbQuery('SELECT id FROM sector')
+        idItems = [dict(zip([key[0] for key in cur.description], row)) for row in idResult]
+        for val in idItems:
+            details.append({                
+                'sector_data': {
+                    'sector_id': val['id'],
+                    'occupance_percentage': ''               
+                    },
+                'coordinates': (),
+                'self_links': {
+                    "detail": root + "sector/" + str(val['id']),
+                    "history": root + "history/" + str(val['id'])
+                }                                   
+            })
+        
+        result = dbQuery('SELECT entry.density, entry.cluster_id, coordinate.latitude, coordinate.longtitude FROM entry INNER JOIN coordinate ON coordinate.sector_id = entry.cluster_id WHERE entry.timestamp = (SELECT MAX(entry.timestamp) FROM entry)  ORDER BY timestamp DESC')
+        items = [dict(zip([key[0] for key in cur.description], row)) for row in result]
+        for val in items:
+            for i, det in enumerate(details):
+                if int(det['sector_data']['sector_id']) == int(val['cluster_id']):
+                    values = (float(val['latitude']), float(val['longtitude']))
+                    details[i]['coordinates'] = list(details[i]['coordinates'])
+                    details[i]['coordinates'].append(values)
+                    details[i]['coordinates'] = tuple(details[i]['coordinates'])
+                    details[i]['sector_data']['occupance_percentage'] = val['density']
+
+        for det in details:
+            polygons.append(Polygon(det['coordinates']))
+        
+        for i, polygon in enumerate(polygons):
+            if originalPolygon.intersects(polygon):
+                print(details[i])
+                response['data'].append(details[i])
+
+        response['metadata'] = {
+            'status_code': 200,
+            'current_timestamp': int(time.time()),
+            'current_date': datetime.fromtimestamp(int(time.time())).isoformat()
+        }
+
+        return response
+
 # Add resources to the API
 api.add_resource(Sector, '/sector/<sector_id>')
 api.add_resource(Sectors, '/sectors')
 api.add_resource(History, '/history/<sector_id>')
 api.add_resource(Distance, '/distance')
+api.add_resource(Grid, '/grid')
 
 if __name__ == '__main__':
     app.run(debug=True)
