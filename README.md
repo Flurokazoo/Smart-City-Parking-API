@@ -85,4 +85,21 @@ None
 | 'date'                    | Date of the last request in ISO 8601 format                           |
 | 'self_links'              | Object with links to both history and details of sector               |
 
-### /sector{id}
+### /sector/{id}
+
+This method yields detailed data of a given sector
+
+#### Parameters
+
+None
+
+#### Response object
+
+| Key                       | Value                                                                             |
+|---------------------------|-----------------------------------------------------------------------------------|
+| 'sector_id'               | The id of the sector                                                              |
+| 'occupance_percentage'    | The occupance of a sector as a float (1 equals 100%)                              |
+| 'timestamp'               | Timestamp of the last sensor measurement                                          |
+| 'date'                    | Date of the last request in ISO 8601 format                                       |
+| 'coordinates'             | Array of latitude and longitude objects containing the location of the sector     |
+| 'sensors'                 | Array of objects containing the id and occupancy of specific sensors              |
