@@ -71,7 +71,11 @@ Pagination is not included in all kinds of requests. Sometimes a method returns 
 
 This method yields a list of all sectors
 
-### Parameters
+### Path Parameters
+
+None
+
+### Query Parameters
 
 None
 
@@ -89,7 +93,13 @@ None
 
 This method yields detailed data of a given sector
 
-### Parameters
+### Path Parameters
+
+| Parameter | Value                                 |
+|-----------|---------------------------------------|
+| id        | _Required._ The id of the sector      |
+
+### Query Parameters
 
 None
 
@@ -108,10 +118,18 @@ None
 
 This method yields a detailed history of a given sector
 
+### Path Parameters
+
+| Parameter | Value                                 |
+|-----------|---------------------------------------|
+| id        | _Required._ The id of the sector      |
+
 ### Query Parameters
 
-| Parameter         | Value                                                                                             |
-|-------------------|---------------------------------------------------------------------------------------------------|
-| limit             | _Optional._ Limits the total amount of returned entries to set number (over multiple pages)       |
-| start             | _Optional._ UNIX Timestamp where the data should start                                            |
-| end               | _Optional._ UNIX Timestamp where the data should end                                              |
+| Parameter         | Value                                                                                                 |
+|-------------------|-------------------------------------------------------------------------------------------------------|
+| limit             | _Optional._ Limits the total amount of returned entries to set number (over multiple pages)           |
+| start             | _Optional._ UNIX Timestamp where the data should start                                                |
+| end               | _Optional._ UNIX Timestamp where the data should end                                                  |
+| interval          | _Optional._ The interval between measurements in seconds (defaults to 1 hour, minimum of 3 minutes)   |
+| page              | _Optional._ Page of the data. New pages are generated in the response object                          |
