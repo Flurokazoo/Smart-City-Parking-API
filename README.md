@@ -4,15 +4,15 @@ The Smart City Parking API is part of my graduation thesis. It gives users great
 
 ##### Table of Contents  
 ## [Response Structure](#responsestructure)  
-    [Data](#data)
-    [Metadata](#metadata)
-    [Pagination](#pagination)
+#### [Data](#data)
+#### [Metadata](#metadata)
+#### [Pagination](#pagination)
 ## [Endpoints](#endpoints)
-    [/sectors](#sectors)
-    [/sector/{id}](#sector)
-    [/history/{id}](#history)
-    [/distance](#distance)
-    [/grid](#grid)
+#### [/sectors](#sectors)
+#### [/sector/{id}](#sector)
+#### [/history/{id}](#history)
+#### [/distance](#distance)
+#### [/grid](#grid)
 
 <a name="responsestructure"/>
 
