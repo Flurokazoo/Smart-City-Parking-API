@@ -229,3 +229,11 @@ Example url:
 
 '/grid?grid=[[51.910131,4.5320465],[51.9065121,4.544804],[51.9059752,4.5440652]]'
 
+### Response object
+
+| Key                       | Value                                                                             |
+|---------------------------|-----------------------------------------------------------------------------------|
+| 'sector_id'               | The id of the sector                                                              |
+| 'occupance_percentage'    | The occupance of a sector as a float (1 equals 100%)                              |
+| 'coordinates'             | Array of latitude and longitude objects containing the location of the sector     |
+| 'self_links'              | Object with links to both history and details of sector                           |
