@@ -6,17 +6,16 @@ The Smart City Parking API is part of my graduation thesis. It gives users great
 
 All responses are contained by an envelope. These are mostly the same among all methods. The envelope contains the following:
 
-```json
-'data': {
-    ...
-},
-'metadata': {
-    ...
-},
-'pagination': {
-    ...
-}
-```
+    'data': {
+        ...
+    },
+    'metadata': {
+        ...
+    },
+    'pagination': {
+        ...
+    }
+
 
 ### Data
 
