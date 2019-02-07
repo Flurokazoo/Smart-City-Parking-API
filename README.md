@@ -61,8 +61,28 @@ Pagination is not included in all kinds of requests. Sometimes a method returns 
 
 | Method    | Endpoint      | Returns                                                       |
 | --------- | ------------- | --------------------------------------------------------------|
-| Get       | /sectors      | A list of all sectors                                         |
-| Get       | /sector/{id}  | Detailed data of a given sector                               |
-| Get       | /history{id}  | Detailed history of a given sector                            |
-| Get       | /distance     | List of sectors within certain distance from coordinates      |
-| Get       | /grid         | List of sectors within bounds of given coordinates            |
+| GET       | /sectors      | A list of all sectors                                         |
+| GET       | /sector/{id}  | Detailed data of a given sector                               |
+| GET       | /history{id}  | Detailed history of a given sector                            |
+| GET       | /distance     | List of sectors within certain distance from coordinates      |
+| GET       | /grid         | List of sectors within bounds of given coordinates            |
+
+### /sectors
+
+This method yields a list of all sectors
+
+#### Parameters
+
+None
+
+#### Response object
+
+| Key                       | Value                                                                 |
+|---------------------------|-----------------------------------------------------------------------|
+| 'sector_id'               | The id of the sector                                                  |
+| 'occupance_percentage'    | The occupance of a sector as a float (1 equals 100%)                  |
+| 'timestamp'               | Timestamp of the last sensor measurement                              |
+| 'date'                    | Date of the last request in ISO 8601 format                           |
+| 'self_links'              | Object with links to both history and details of sector               |
+
+### /sector{id}
