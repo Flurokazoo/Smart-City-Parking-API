@@ -67,15 +67,15 @@ Pagination is not included in all kinds of requests. Sometimes a method returns 
 | GET       | /distance     | List of sectors within certain distance from coordinates      |
 | GET       | /grid         | List of sectors within bounds of given coordinates            |
 
-### /sectors
+## /sectors
 
 This method yields a list of all sectors
 
-#### Parameters
+### Parameters
 
 None
 
-#### Response object
+### Response object
 
 | Key                       | Value                                                                 |
 |---------------------------|-----------------------------------------------------------------------|
@@ -85,15 +85,15 @@ None
 | 'date'                    | Date of the last request in ISO 8601 format                           |
 | 'self_links'              | Object with links to both history and details of sector               |
 
-### /sector/{id}
+## /sector/{id}
 
 This method yields detailed data of a given sector
 
-#### Parameters
+### Parameters
 
 None
 
-#### Response object
+### Response object
 
 | Key                       | Value                                                                             |
 |---------------------------|-----------------------------------------------------------------------------------|
@@ -103,3 +103,15 @@ None
 | 'date'                    | Date of the last request in ISO 8601 format                                       |
 | 'coordinates'             | Array of latitude and longitude objects containing the location of the sector     |
 | 'sensors'                 | Array of objects containing the id and occupancy of specific sensors              |
+
+## /history/{id}
+
+This method yields a detailed history of a given sector
+
+### Query Parameters
+
+| Parameter         | Value                                                                                             |
+|-------------------|---------------------------------------------------------------------------------------------------|
+| limit             | _Optional._ Limits the total amount of returned entries to set number (over multiple pages)       |
+| start             | _Optional._ UNIX Timestamp where the data should start                                            |
+| end               | _Optional._ UNIX Timestamp where the data should end                                              |
