@@ -133,3 +133,30 @@ This method yields a detailed history of a given sector
 | end               | _Optional._ UNIX Timestamp where the data should end                                                  |
 | interval          | _Optional._ The interval between measurements in seconds (defaults to 1 hour, minimum of 3 minutes)   |
 | page              | _Optional._ Page of the data. New pages are generated in the response object                          |
+
+### Response object
+
+| Key                       | Value                                                                             |
+|---------------------------|-----------------------------------------------------------------------------------|
+| 'sector_id'               | The id of the sector                                                              |
+| 'entries'                 | Array of objects including entries, containing the following responses:           |
+| 'occupance_percentage'    | The occupance of a sector as a float (1 equals 100%)                              |
+| 'average_percentage'      | The average occupance of the sector in the given interval                         |
+| 'timestamp'               | Timestamp of the last sensor measurement in the given interval                    |
+| 'date'                    | Date of the last request in ISO 8601 format for the given interval                |
+
+## /distance
+
+This method yields a list of sectors within certain distance from coordinates
+
+### Path Parameters
+
+None
+
+### Query Parameters
+
+| Parameter         | Value                                                                                                 |
+|-------------------|-------------------------------------------------------------------------------------------------------|
+| latitude          | _Required._ Latitude coordinate for search point                                                      |
+| longitude         | _Required._ Longitude coordinate for search point                                                     |
+| range             | _Optional._ The range in meters to look for sectors (when not set, defaults to 500)                   |
