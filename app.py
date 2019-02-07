@@ -14,7 +14,7 @@ from decimal import Decimal
 from shapely.geometry import Polygon
 import ast
 
-DATABASE = 'C:/Users/Jasper/Downloads/parking_db.db'
+DATABASE = 'database.db'
 
 app = Flask(__name__)
 api = Api(app)
