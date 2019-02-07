@@ -2,17 +2,17 @@
 
 The Smart City Parking API is part of my graduation thesis. It gives users greater control over their Smart City Parking sensors. This is very much a prototype and a work in progress.
 
-##### Table of Contents  
-## [Response Structure](#responsestructure)  
-#### [Data](#data)
-#### [Metadata](#metadata)
-#### [Pagination](#pagination)
-## [Endpoints](#endpoints)
-#### [/sectors](#sectors)
-#### [/sector/{id}](#sector)
-#### [/history/{id}](#history)
-#### [/distance](#distance)
-#### [/grid](#grid)
+## Table of Contents  
+### [Response Structure](#responsestructure)  
+[Data](#data)
+[Metadata](#metadata)
+[Pagination](#pagination)
+### [Endpoints](#endpoints)
+[/sectors](#sectors)
+[/sector/{id}](#sector)
+[/history/{id}](#history)
+[/distance](#distance)
+[/grid](#grid)
 
 <a name="responsestructure"/>
 
