@@ -160,3 +160,40 @@ None
 | latitude          | _Required._ Latitude coordinate for search point                                                      |
 | longitude         | _Required._ Longitude coordinate for search point                                                     |
 | range             | _Optional._ The range in meters to look for sectors (when not set, defaults to 500)                   |
+
+### Response object
+
+| Key                       | Value                                                                             |
+|---------------------------|-----------------------------------------------------------------------------------|
+| 'sector_id'               | The id of the sector                                                              |
+| 'distance'                | The distance from the given coordinates to the sector in meters                   |
+| 'occupance_percentage'    | The occupance of a sector as a float (1 equals 100%)                              |
+| 'destination'             | Coordinates (latitude and longitude) to the target sector                         |
+
+## /grid
+
+This method yields a ist of sectors within bounds of given coordinates 
+
+### Path Parameters
+
+None
+
+### Query Parameters
+
+| Parameter         | Value                                                                                                                                                             |
+|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| grid              | _Required._ A multidimensional array of latitude and longitude coordinates to compare to sector coordinates. Needs at least 3 latitude and longitude sets to work |
+
+### Grid Parameter example:
+
+Example array:
+
+    [
+        [51.910131,4.5320465],
+        [51.9065121,4.544804],
+        [51.9059752,4.5440652]
+    ]
+
+Example url:
+
+'/grid?grid=[[51.910131,4.5320465],[51.9065121,4.544804],[51.9059752,4.5440652]]'
