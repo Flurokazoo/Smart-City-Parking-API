@@ -56,3 +56,13 @@ Pagination is not included in all kinds of requests. Sometimes a method returns 
         'next_url': 'URL to next page',
         'prev_url': 'URL to previous page
     }
+
+## Endpoints
+
+| Method    | Endpoint      | Returns                                                       |
+| --------- | ------------- | --------------------------------------------------------------|
+| Get       | /sectors      | A list of all sectors                                         |
+| Get       | /sector/{id}  | Detailed data of a given sector                               |
+| Get       | /history{id}  | Detailed history of a given sector                            |
+| Get       | /distance     | List of sectors within certain distance from coordinates      |
+| Get       | /grid         | List of sectors within bounds of given coordinates            |
