@@ -13,11 +13,14 @@ import numpy
 from decimal import Decimal
 from shapely.geometry import Polygon
 import ast
+from flask_cors import CORS
+
 
 DATABASE = 'database.db'
 
 app = Flask(__name__)
 api = Api(app)
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 conn = sqlite3.connect(DATABASE, check_same_thread=False)
 cur = conn.cursor()
